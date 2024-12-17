@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_ProfidriveTel1Config" Id="{fabde8c5-a8b3-0be9-1b90-9d53bab693c7}">
+    <Declaration><![CDATA[TYPE ST_ProfidriveTel1Config :
+STRUCT
+	fRampDownTimeCoastStop 		: REAL := 1.0;		//Coast stop deceleration time in s
+	bControlRequested			: BOOL := TRUE;
+	bOutputVelocity				: BOOL := TRUE;		//TRUE: TargetValue = Velocity, FALSE: TargetValue = Position
+	fP1058						: REAL := 150.0;	//JOG 1 velocity in rotation/s
+	fP1059						: REAL := -150.0;	//JOG 1 velocity in rotation/s
+	fP1120						: REAL := 2.0;		//Default acceleration time in s
+	fP1121						: REAL := 2.0;		//Default deceleration time in s
+	fP1135						: REAL := 1.0;		//Ramp down time quick stop in s
+	fP2000						: REAL := 3000;		//Velocity in rotation/s when targeting 16#4000
+	nR0035						: REAL := 60.0; 	//Temperature in degree celcius	
+	bSwapProcessData			: BOOL; //SWAP Process Data from/to FIELDBUS
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

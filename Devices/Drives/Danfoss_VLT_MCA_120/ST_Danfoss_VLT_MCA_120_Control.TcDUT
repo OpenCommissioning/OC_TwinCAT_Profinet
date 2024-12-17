@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Danfoss_VLT_MCA_120_Control" Id="{651238fa-0c30-0a47-2f9b-343a7f45e1ca}">
+    <Declaration><![CDATA[TYPE ST_Danfoss_VLT_MCA_120_Control :
+STRUCT
+	bOFF1								: BOOL;	//STW1_0	0 = OFF1 (braking with ramp-function generator, then pulse suppression & ready for switching on) | 0 → 1 = ON (pulses can be enabled)
+	bOFF2								: BOOL;	//STW1_1	0 = OFF2 (immediate pulse suppression and switching on inhibited) | 1 = No OFF2 (enable is possible)
+	bOFF3								: BOOL;	//STW1_2	0 = OFF3 (braking with the OFF3 ramp p1135, then pulse suppression and switching on inhibited) | 1 = No OFF3 (enable possible) 
+	bEnableOperation					: BOOL;	//STW1_3	0 = Inhibit operation (suppress pulses) | 1 = Enable operation (pulses can be enabled) 
+	bOperatingCondition					: BOOL;	//STW1_4	0 = Inhibit ramp-function generator (set the ramp-function generator output to zero) | 1 = Operating condition (the ramp-function generator can be enabled)
+	bContinueRampFunctionGenerator		: BOOL;	//STW1_5	0 = Freeze ramp-function generator (freeze the ramp-function generator output) | 1 = Continue ramp-function generator 
+	bEnableSetpoint  					: BOOL;	//STW1_6	0 = Inhibit setpoint (set the ramp-function generator input to zero) | 1 = Enable setpoint 
+	bAcknowledgeFaults					: BOOL;	//STW1_7	0 → 1: = Acknowledge faults	                            
+	bJog1								: BOOL;	//STW1_8	1 = Jog 1 signal source
+	bJog2								: BOOL;	//STW1_9	1 = Jog 2 signal source
+	bDataValid							: BOOL;	//STW1_10	1 = Data Valid
+	bFreqCorrDown						: BOOL;	//STW1_11	1 = Frequency correction Down
+	bFreqCorrUp							: BOOL;	//STW1_12	1 = Frequency correction Up
+	bParameterSelectionLSB				: BOOL;	//STW1_13	1 = Parameter Selection LSB
+	bParameterSelectionMSB				: BOOL;	//STW1_14	1 = Parameter Selection MSB
+	bReversing							: BOOL;	//STW1_15	1 = Reversing	
+	nSoll 								: INT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

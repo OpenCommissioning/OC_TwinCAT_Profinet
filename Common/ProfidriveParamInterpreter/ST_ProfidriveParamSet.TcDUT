@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_ProfidriveParamSet" Id="{cf1cbdb5-41a7-0790-2d86-575d45bffa54}">
+    <Declaration><![CDATA[{attribute 'conditionalshow'}
+TYPE ST_ProfidriveParamSet :
+	ARRAY[0..22] OF ST_ProfidriveParam; 
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

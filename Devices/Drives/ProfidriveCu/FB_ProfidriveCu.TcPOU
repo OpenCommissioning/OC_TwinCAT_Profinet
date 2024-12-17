@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_ProfidriveCu" Id="{7a681ee5-7b29-0925-01ee-0e88eca4d9b4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ProfidriveCu EXTENDS FB_Base
+VAR_INPUT
+	stConfig 			: ST_ProfidriveCuConfig;	
+	bSafetyOk			: BOOL;
+END_VAR
+VAR
+	fbParamInterpreter	: FB_PROFIdriveParamInterpreter;
+	stParamSet			: ST_PROFIdriveParamSet;
+	stRecordData		: ST_AdsMessage;
+	iRecordData			: I_RecordData;	
+	aSinamics			: ARRAY[1..32] OF I_Sinamics; 	
+	nParamState			: USINT := 0; //0=INIT 1=WRREC 2=WRRES 3=RDREC 4=RDRES
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+InitRun();
+Safety();
+ParamStatemachine();]]></ST>
+    </Implementation>
+    <Method Name="GetParam" Id="{5640a2f7-a751-0b28-01f9-dab24fced31e}">
+      <Declaration><![CDATA[METHOD INTERNAL GetParam : BOOL
+VAR_INPUT
+	nAxisNumber : BYTE;
+END_VAR
+
+VAR	
+	i : INT;	
+END_VAR	]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetParam := FALSE;
+
+IF NOT IsAxisNoValid(nAxisNumber) THEN
+	RETURN;
+END_IF
+
+IF fbParamInterpreter.nParameters > 0 THEN
+	FOR i := 0 TO fbParamInterpreter.nParameters - 1 BY 1 DO
+		aSinamics[nAxisNumber].GetAcylicParameter(ADR(stParamSet[i]));
+	END_FOR
+END_IF
+
+GetParam := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InitRun" Id="{b6b6be55-120b-0340-39b4-da6ee6e22564}">
+      <Declaration><![CDATA[METHOD INTERNAL InitRun : BOOL
+VAR_INST
+	bInitRun : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT bInitRun THEN RETURN; END_IF
+bInitRun := FALSE;
+
+fbParamInterpreter.pParamSet := ADR(stParamSet);
+
+iRecordData := OC_Core.GVL_Core.fbSystem.fbRecordData;
+
+IF iRecordData <> 0 THEN
+	nParamState := 1; //WRREC	
+	iRecordData.Subscribe(ADR(stConfig.stRecordIdent), stRecordData);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsAxisNoValid" Id="{d51ddec7-e028-0e1c-145f-4a5cd793629f}">
+      <Declaration><![CDATA[METHOD INTERNAL IsAxisNoValid : BOOL
+VAR_INPUT
+	nAxisNo	: BYTE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsAxisNoValid := nAxisNo <= 32 AND nAxisNo >= 1;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ParamStateMachine" Id="{f259869b-f424-092b-1913-4ed24f5f4257}">
+      <Declaration><![CDATA[METHOD INTERNAL ParamStateMachine]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF iRecordData = 0 THEN
+	RETURN;
+END_IF
+
+CASE nParamState OF
+
+1: //WRREC	
+	IF iRecordData.GetWriteIndication(stRecordData) THEN
+		
+		(* Reset the ParamInterpreter *)
+		fbParamInterpreter.Reset();
+				
+		(* Get/set parameters only if Axis is available *)
+		IF IsAxisNoValid(stRecordData.aData[2]) THEN
+			
+			fbParamInterpreter(pRawData := ADR(stRecordData.aData));
+			
+			(* Is read command -> get parameters *)
+			IF fbParamInterpreter.nCommand = 1 THEN
+				GetParam(fbParamInterpreter.nAxis);
+			END_IF
+			
+			(* Is write command -> set parameters *)
+			IF fbParamInterpreter.nCommand = 2 THEN
+				SetParam(fbParamInterpreter.nAxis);
+			END_IF
+		END_IF
+		
+		(* Next step is WRRES *)
+		nParamState := 2;
+	
+	END_IF
+	
+2: //WRRES
+	(* Send write response *)
+	IF iRecordData.SendWriteResponse(stRecordData) = S_OK THEN
+		(* Next step is RDREC *)
+		nParamState := 3;		
+	END_IF
+
+3: //RDREC
+	IF iRecordData.GetReadIndication(stRecordData) THEN		
+			
+		(* Make user data for response *)
+		IF fbParamInterpreter.nCommand = 1 THEN
+			fbParamInterpreter.MakeResponse(ADR(stRecordData.aData));
+		END_IF		
+		
+		(* Next step is RDRES *)
+		nParamState := 4;	
+	END_IF
+	
+4: //RDRES
+	(* Send read response *)
+	IF iRecordData.SendReadResponse(stRecordData) = S_OK THEN
+		(* Next step is WRREC *)
+		nParamState := 1;		
+	END_IF
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Safety" Id="{7d96a4ea-52cf-086a-2408-70bf0237afaa}">
+      <Declaration><![CDATA[METHOD INTERNAL Safety : BOOL
+VAR
+	i : BYTE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=1 TO 32 DO
+	IF aSinamics[i] <> 0 THEN
+		IF NOT bSafetyOk THEN 
+			aSinamics[i].TrigSafetyStop();
+		END_IF
+	END_IF
+END_FOR	]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetParam" Id="{c849bc24-298a-06d6-2e18-3c8527f33f48}">
+      <Declaration><![CDATA[METHOD INTERNAL SetParam : BOOL
+VAR_INPUT
+	nAxisNumber : BYTE;
+END_VAR
+
+VAR	
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SetParam := FALSE;
+
+IF NOT IsAxisNoValid(nAxisNumber) THEN
+	RETURN;
+END_IF
+
+IF fbParamInterpreter.nParameters > 0 THEN
+	FOR i := 0 TO fbParamInterpreter.nParameters - 1 BY 1 DO
+		aSinamics[nAxisNumber].SetAcylicParameter(ADR(stParamSet[i]));
+	END_FOR
+END_IF
+
+SetParam := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Subscribe" Id="{97ecb6a1-5fa5-05a0-1ecb-13c0b4f70984}">
+      <Declaration><![CDATA[METHOD PUBLIC Subscribe
+VAR_INPUT
+	iSinamics : I_Sinamics;
+	nNumber : BYTE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF nNumber > 0 AND nNumber < 33 THEN
+	aSinamics[nNumber] := iSinamics;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

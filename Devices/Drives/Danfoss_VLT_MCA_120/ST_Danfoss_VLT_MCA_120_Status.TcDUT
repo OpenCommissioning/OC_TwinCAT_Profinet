@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Danfoss_VLT_MCA_120_Status" Id="{e0e1ad43-924c-06d7-232a-fd8d48ca117a}">
+    <Declaration><![CDATA[TYPE ST_Danfoss_VLT_MCA_120_Status :
+STRUCT
+	bReadyForSwitchingOn			: BOOL; // ZSW1_0	1 = Ready for switching on
+	bReadyForOperation				: BOOL; // ZSW1_1	1 = Ready for operation
+	bOperationEnabled				: BOOL; // ZSW1_2	1 = Operation enabled
+	bFaultPresent					: BOOL; // ZSW1_3	1 = Fault present
+	bNoCoastDownActive				: BOOL; // ZSW1_4	1 = No coast down active (OFF2 inactive)
+	bNoQuickStopActive				: BOOL; // ZSW1_5	1 = No quick stop active (OFF3 inactive)
+	bSwitchingOnInhibited			: BOOL; // ZSW1_6	1 = Switching on inhibited active
+	bAlarmPresent					: BOOL; // ZSW1_7	1 = Alarm present                        	
+	bDeviationWithinTolerance		: BOOL; // ZSW1_8	1 = Speed setpoint - actual value deviation within tolerance t_off
+	bControlRequested				: BOOL; // ZSW1_9	1 = Control requested 
+	bFrequencyLimitOk				: BOOL; // ZSW1_10	1 = Frequency Limit Ok     
+	bBusy 							: BOOL; // ZSW1_11	1 = Busy, in operation     
+	bInverterError					: BOOL; // ZSW1_12	1 = Overload, the frequency was stopped due to overload.
+	bVoltageError					: BOOL; // ZSW1_13	1 = Voltage exceeded
+	bMomentError					: BOOL; // ZSW1_14	1 = Moment exceeded
+	bTimerError						: BOOL; // ZSW1_15	1 = Timer exceeded 
+	nIst							: INT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

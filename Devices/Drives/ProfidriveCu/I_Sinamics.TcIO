@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <Itf Name="I_Sinamics" Id="{d54f4273-798f-0e19-24f9-643cada08425}">
+    <Declaration><![CDATA[INTERFACE INTERNAL I_Sinamics
+]]></Declaration>
+    <Method Name="GetAcylicParameter" Id="{86dd38db-7016-0f65-1371-9bbb76d19c52}">
+      <Declaration><![CDATA[METHOD GetAcylicParameter : BOOL
+VAR_INPUT
+	stParameter : POINTER TO ST_PROFIdriveParam;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="SetAcylicParameter" Id="{d0b9d42b-f220-0d14-2101-0bf8636436c3}">
+      <Declaration><![CDATA[METHOD SetAcylicParameter : BOOL
+VAR_INPUT
+	pParameter :  POINTER TO ST_PROFIdriveParam;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="TrigSafetyStop" Id="{5fc77642-6361-07b9-0f66-de56ef1c951a}">
+      <Declaration><![CDATA[METHOD TrigSafetyStop]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

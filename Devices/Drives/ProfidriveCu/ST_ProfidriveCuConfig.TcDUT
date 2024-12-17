@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_ProfidriveCuConfig" Id="{b31645a5-bde5-01b1-2946-142992e72a60}">
+    <Declaration><![CDATA[TYPE ST_ProfidriveCuConfig :
+STRUCT
+	stRecordIdent		: ST_RecordIdent;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

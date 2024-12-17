@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_ProfidriveBaseState" Id="{67f99ce3-3e85-0713-170c-0cb2b056b330}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK INTERNAL FB_ProfidriveBaseState
+VAR_INPUT
+	bCoastStop				: BOOL; //Priority 1 -> coast or brake stop
+	bQuickStop				: BOOL; //Priority 2 -> quick stop
+	bOn						: BOOL; //Priority 3 -> ramp stop
+	bEnableOperation		: BOOL;
+	bJog1					: BOOL;
+	bJog2					: BOOL;
+	bJogMode				: BOOL;
+	bDriveStandstill		: BOOL; //Feedback -> velocity is 0
+END_VAR
+VAR_OUTPUT
+	bReadyForSwitchingOn	: BOOL;
+	bReadyForOperation		: BOOL;
+	bOperationEnabled		: BOOL;
+	bSwitchingOnInhibited	: BOOL;
+	bPulsesEnabled			: BOOL;	
+END_VAR
+VAR
+	bJogActive  : BOOL;
+	eLocalState : E_ProfidriveBaseState := E_ProfidriveBaseState.S1_SwitchingOnInhibited;	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bJogActive := bJogMode AND (bJog1 OR bJog2);
+
+CASE eLocalState OF 
+	E_ProfidriveBaseState.S1_SwitchingOnInhibited : S1_SwitchingOnInhibited();
+	E_ProfidriveBaseState.S2_ReadyForSwitchingOn : S2_ReadyForSwitchingOn();
+	E_ProfidriveBaseState.S3_SwitchedOn : S3_SwitchedOn();
+	E_ProfidriveBaseState.S4_Operation : S4_Operation();
+	E_ProfidriveBaseState.S5a_RampStop : S5a_RampStop();
+	E_ProfidriveBaseState.S5b_QuickStop : S5b_QuickStop();
+	E_ProfidriveBaseState.S5c_JogRampStop : S5c_JogRampStop();
+END_CASE]]></ST>
+    </Implementation>
+    <Property Name="eState" Id="{b570af51-38cb-0033-2745-17282cc6abde}">
+      <Declaration><![CDATA[PROPERTY eState : E_ProfidriveBaseState]]></Declaration>
+      <Get Name="Get" Id="{8deb4a10-0007-075c-13d2-4ea7bf51c2c8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[eState := eLocalState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="S1_SwitchingOnInhibited" Id="{8b1f936f-1181-0c94-2d99-7f7ccdd15167}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S1_SwitchingOnInhibited
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bReadyForSwitchingOn	:= FALSE;
+bReadyForOperation		:= FALSE;
+bOperationEnabled		:= FALSE;
+bSwitchingOnInhibited	:= TRUE;	
+bPulsesEnabled			:= FALSE;
+
+(*to S2_ReadyForSwitchingOn*)	
+	IF NOT bOn AND bCoastStop AND bQuickStop THEN
+		eLocalState := E_ProfidriveBaseState.S2_ReadyForSwitchingOn;
+	END_IF		]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S2_ReadyForSwitchingOn" Id="{fe11df1e-9b09-052b-2c02-744439a01e9e}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S2_ReadyForSwitchingOn
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bReadyForSwitchingOn	:= TRUE;	
+bPulsesEnabled			:= FALSE;
+// Besonderheit bei Telegramm 1
+bSwitchingOnInhibited	:= FALSE;	
+
+(*to S1_SwitchingOnInhibited*)	
+	IF NOT bCoastStop OR NOT bQuickStop THEN
+		eLocalState := E_ProfidriveBaseState.S1_SwitchingOnInhibited;
+		RETURN;
+	END_IF
+
+(*to S3_SwitchedOn*)	
+	IF bOn OR bJogActive THEN
+		eLocalState := E_ProfidriveBaseState.S3_SwitchedOn;
+	END_IF	]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S3_SwitchedOn" Id="{440ac6c8-579f-001b-2676-b150543197f5}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S3_SwitchedOn
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bReadyForSwitchingOn	:= TRUE;
+bReadyForOperation		:= TRUE;
+bOperationEnabled		:= FALSE;
+bSwitchingOnInhibited	:= FALSE;	
+bPulsesEnabled			:= FALSE;
+
+(*to S1_SwitchingOnInhibited*)	
+	IF NOT bCoastStop OR NOT bQuickStop THEN
+		eLocalState := E_ProfidriveBaseState.S1_SwitchingOnInhibited;
+		RETURN;
+	END_IF
+
+(*to S2_ReadyForSwitchingOn*)	
+	IF NOT bOn AND NOT bJogActive THEN
+		eLocalState := E_ProfidriveBaseState.S2_ReadyForSwitchingOn;
+		RETURN;
+	END_IF
+
+(*to S4_Operation*)	
+	IF bEnableOperation THEN
+		eLocalState := E_ProfidriveBaseState.S4_Operation;
+	END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S4_Operation" Id="{09212b6c-e90e-0497-1e0b-9f10472dcf37}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S4_Operation
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bReadyForSwitchingOn	:= TRUE;
+bReadyForOperation		:= TRUE;
+bOperationEnabled		:= TRUE;
+bSwitchingOnInhibited	:= FALSE;	
+bPulsesEnabled			:= TRUE;
+	
+(*to S1_SwitchingOnInhibited*)	
+	IF NOT bCoastStop THEN
+		eLocalState := E_ProfidriveBaseState.S1_SwitchingOnInhibited;
+		RETURN;
+	END_IF
+
+(*to S5b_QuickStop*)	
+	IF NOT bQuickStop THEN
+		eLocalState := E_ProfidriveBaseState.S5b_QuickStop;
+		RETURN;
+	END_IF
+	
+(*to S5a_RampStop*)	
+	IF NOT bJogMode AND NOT bOn THEN
+		eLocalState := E_ProfidriveBaseState.S5a_RampStop;
+		RETURN;
+	END_IF
+	
+(*to S5c_JogRampStop*)	
+	IF bJogMode AND NOT bJogActive THEN
+		eLocalState := E_ProfidriveBaseState.S5c_JogRampStop;
+		RETURN;
+	END_IF
+	
+(*to S3_SwitchedOn*)	
+	IF NOT bEnableOperation THEN
+		eLocalState := E_ProfidriveBaseState.S3_SwitchedOn;
+	END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S5a_RampStop" Id="{fe46200a-5223-0841-0e46-ed8ae8fc8e65}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S5a_RampStop
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bReadyForSwitchingOn	:= TRUE;
+bReadyForOperation		:= TRUE;
+bOperationEnabled		:= FALSE;
+bSwitchingOnInhibited	:= FALSE;	
+bPulsesEnabled			:= TRUE;
+
+(*to S1_SwitchingOnInhibited*)	
+	IF NOT bCoastStop THEN
+		eLocalState := E_ProfidriveBaseState.S1_SwitchingOnInhibited;
+		RETURN;
+	END_IF
+
+(*to S5b_QuickStop*)	
+	IF NOT bQuickStop THEN
+		eLocalState := E_ProfidriveBaseState.S5b_QuickStop;
+		RETURN;
+	END_IF
+	
+(*to S2_ReadyForSwitchingOn*)	
+	IF bDriveStandstill OR NOT bEnableOperation THEN
+		eLocalState := E_ProfidriveBaseState.S2_ReadyForSwitchingOn;
+	END_IF
+
+(*to S4_Operation*)	
+	IF bOn THEN
+		eLocalState := E_ProfidriveBaseState.S4_Operation;
+		RETURN;
+	END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S5b_QuickStop" Id="{9a23a23b-6923-02b2-3ab0-7ffcb038c1a9}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S5b_QuickStop
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bReadyForSwitchingOn	:= TRUE;
+bReadyForOperation		:= TRUE;
+bOperationEnabled		:= FALSE;
+bSwitchingOnInhibited	:= FALSE;	
+bPulsesEnabled			:= TRUE;
+
+(*to S1_SwitchingOnInhibited*)	
+	IF NOT bCoastStop OR bDriveStandstill OR NOT bEnableOperation THEN
+		eLocalState := E_ProfidriveBaseState.S1_SwitchingOnInhibited;
+	END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S5c_JogRampStop" Id="{5dbe79b0-c82f-0fee-303d-ed24ab988f22}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S5c_JogRampStop
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bReadyForSwitchingOn	:= TRUE;
+bReadyForOperation		:= TRUE;
+bOperationEnabled		:= FALSE;
+bSwitchingOnInhibited	:= FALSE;	
+bPulsesEnabled			:= TRUE;
+
+(*to S1_SwitchingOnInhibited*)	
+	IF NOT bCoastStop THEN
+		eLocalState := E_ProfidriveBaseState.S1_SwitchingOnInhibited;
+		RETURN;
+	END_IF
+
+(*to S5b_QuickStop*)	
+	IF NOT bQuickStop THEN
+		eLocalState := E_ProfidriveBaseState.S5b_QuickStop;
+		RETURN;
+	END_IF
+	
+(*to S2_ReadyForSwitchingOn*)	
+	IF bDriveStandstill OR NOT bEnableOperation THEN
+		eLocalState := E_ProfidriveBaseState.S2_ReadyForSwitchingOn;
+	END_IF
+
+(*to S4_Operation*)	
+	IF bJogActive THEN
+		eLocalState := E_ProfidriveBaseState.S4_Operation;
+		RETURN;
+	END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

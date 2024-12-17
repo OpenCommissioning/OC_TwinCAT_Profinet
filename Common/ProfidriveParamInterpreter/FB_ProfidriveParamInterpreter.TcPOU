@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_ProfidriveParamInterpreter" Id="{71925c59-867f-0b10-2bb6-c7c78e284de7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK INTERNAL FB_ProfidriveParamInterpreter
+VAR_INPUT
+	(* Pointer to raw user data *)
+	pRawData		: POINTER TO BYTE;
+	(* Pointer to array of parameters *)
+	pParamSet		: POINTER TO ST_ProfidriveParamSet;
+END_VAR
+VAR_OUTPUT
+	(* Reference number for response *)
+	nReference		: BYTE;
+	(* 1 = read, 2 = write *)
+	nCommand		: BYTE;
+	(* Addressed axis number *)
+	nAxis			: BYTE;
+	(* Number of parameters to read/write *)
+	nParameters		: BYTE;
+END_VAR
+VAR
+	nOffsReq		: BYTE;
+	nOffsValue		: BYTE;
+	nFormatSize		: BYTE;
+	nValues			: BYTE;
+	i, j, k			: UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Copy header (first 4 bytes) *)
+	nReference := pRawData[0];
+	nCommand := pRawData[1];
+	nAxis := pRawData[2];
+	nParameters := pRawData[3];
+
+(* Set request offset behind header *)
+	nOffsReq := 4;
+
+(* Set value offset behind last request *)
+	nOffsValue := 4 + nParameters * 6;
+
+(* Reset all parameters *)
+	memset(pParamSet, 0, SIZEOF(ST_PROFIdriveParamSet));
+
+(* Check parameter number *)	
+	IF nParameters = 0 THEN
+		RETURN;
+	END_IF
+
+(* Loop through number of parameter requests *)
+	FOR i := 0 TO nParameters - 1 BY 1 DO
+		
+		(* Get parameter request information (6 bytes)... *)
+		pParamSet^[i].nAttribute := pRawData[nOffsReq];
+		pParamSet^[i].nElements := pRawData[nOffsReq + 1];
+		pParamSet^[i].nNumber := pRawData[nOffsReq + 2] * 16#100 + pRawData[nOffsReq + 3];
+		pParamSet^[i].nSubIndex := pRawData[nOffsReq + 4] * 16#100 + pRawData[nOffsReq + 5];
+		
+		(* ... and set offset to next request *)
+		nOffsReq := nOffsReq + 6;
+				
+		(* Write command -> get values *)
+		IF nCommand = 2 THEN		
+			(* Get format *)
+			nFormatSize := FormatSize(pRawData[nOffsValue]);
+			pParamSet^[i].nFormat := FormatType(pRawData[nOffsValue]);
+			nOffsValue := nOffsValue + 1;
+			
+			(* Get number of values *)
+			nValues := pRawData[nOffsValue];
+			nOffsValue := nOffsValue + 1;
+			
+			(* Loop through number of values *)
+			FOR j := 0 TO nValues - 1 BY 1 DO
+				
+				(* Set value offset behind current values *)
+				nOffsValue := nOffsValue + nFormatSize;
+				
+				(* Loop through format size and get values in reverse order *)
+				FOR k := 0 TO nFormatSize - 1 BY 1 DO
+					pParamSet^[i].aValue[j + k] := pRawData[nOffsValue - k - 1];
+				END_FOR
+			END_FOR
+			
+			(* Check if odd and set to even number *)
+			IF nOffsValue.0 THEN
+				nOffsValue := nOffsValue + 1;
+			END_IF
+		END_IF
+	END_FOR]]></ST>
+    </Implementation>
+    <Method Name="FormatSize" Id="{8b13aac3-2eef-0547-0a82-c68daadcc280}">
+      <Declaration><![CDATA[METHOD INTERNAL FormatSize : BYTE
+VAR_INPUT
+	nFormat	: BYTE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nFormat OF
+	 16#02 : FormatSize := 2;
+	 16#03 : FormatSize := 2;
+	 16#04 : FormatSize := 4;
+	 16#05 : FormatSize := 2;
+	 16#06 : FormatSize := 2;
+	 16#07 : FormatSize := 4;
+	 16#08 : FormatSize := 4;
+	 16#40 : FormatSize := 0;
+	 16#41 : FormatSize := 2;
+	 16#42 : FormatSize := 2;
+	 16#43 : FormatSize := 4;
+	 16#44 : FormatSize := 0;
+ELSE
+	FormatSize := 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FormatType" Id="{22c723c6-9784-07b9-1d4d-4b498ce3859e}">
+      <Declaration><![CDATA[METHOD INTERNAL FormatType : E_ProfidriveParamFormat
+VAR_INPUT
+	nFormat	: BYTE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nFormat OF
+	 16#02 : FormatType := E_ProfidriveParamFormat.INT8;
+	 16#03 : FormatType := E_ProfidriveParamFormat.INT16;
+	 16#04 : FormatType := E_ProfidriveParamFormat.INT32;
+	 16#05 : FormatType := E_ProfidriveParamFormat.UINT8;
+	 16#06 : FormatType := E_ProfidriveParamFormat.UINT16;
+	 16#07 : FormatType := E_ProfidriveParamFormat.UINT32;
+	 16#08 : FormatType := E_ProfidriveParamFormat.FLOAT;
+	 16#40 : FormatType := E_ProfidriveParamFormat.ZERO;
+	 16#41 : FormatType := E_ProfidriveParamFormat.BYTE_;
+	 16#42 : FormatType := E_ProfidriveParamFormat.WORD_;
+	 16#43 : FormatType := E_ProfidriveParamFormat.DWORD_;
+	 16#44 : FormatType := E_ProfidriveParamFormat.ERROR;
+ELSE
+	FormatType := E_PROFIdriveParamFormat.UNKNOWN;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MakeResponse" Id="{decabaa6-dece-0d0a-0907-741c241f957e}">
+      <Declaration><![CDATA[METHOD INTERNAL MakeResponse : BOOL
+VAR_INPUT
+	(* Pointer to acyclic user data *)
+	pResData		: POINTER TO BYTE;
+END_VAR
+VAR
+	nOffset			: BYTE;
+	nFormatSize		: BYTE;
+	i, j, k			: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* Copy header (first 4 bytes) *)
+	pResData[0] := nReference;
+	pResData[1] := nCommand;
+	pResData[2] := nAxis;
+	pResData[3] := nParameters;
+
+(* Set offset behind header *)
+	nOffset := 4;
+	
+(* Check parameter number *)	
+	IF nParameters = 0 THEN
+		RETURN;
+	END_IF
+
+(* Loop through number of parameter requests *)
+	FOR i := 0 TO nParameters - 1 BY 1 DO
+		
+		(* Set format *)
+		pResData[nOffset] := pParamSet^[i].nFormat;
+		nFormatSize := FormatSize(pParamSet^[i].nFormat);
+		nOffset := nOffset + 1;
+		
+		(* Set number of values *)
+		pResData[nOffset] := pParamSet^[i].nElements;
+		nOffset := nOffset + 1;
+		
+		(* Loop through number of elements *)
+		FOR j := 0 TO pParamSet^[i].nElements - 1 BY 1 DO
+			
+			(* Set value offset behind current values *)
+			nOffset := nOffset + nFormatSize;
+			
+			(* Loop through format size and get values in reverse order *)
+			
+			IF nFormatSize > 0 THEN
+				FOR k := 0 TO nFormatSize - 1 BY 1 DO
+					pResData[nOffset - k - 1] := pParamSet^[i].aValue[j + k] ;
+				END_FOR
+			END_IF
+			
+		END_FOR
+		
+		(* Check if odd and set to even number *)
+		IF nOffset.0 THEN
+			nOffset := nOffset + 1;
+		END_IF	
+	END_FOR
+
+(* Return true when finished *)
+	MakeResponse := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{6d33247c-5a83-0abe-0bb0-bbfdb17664d8}">
+      <Declaration><![CDATA[METHOD INTERNAL Reset : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[nReference := 0;
+nCommand := 0;
+nAxis := 0;
+nParameters := 0;
+memset(pParamSet, 0, SIZEOF(ST_ProfidriveParamSet));]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

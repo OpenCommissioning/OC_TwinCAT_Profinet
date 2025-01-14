@@ -33,7 +33,7 @@
     <DefaultNamespace>OC_Profinet</DefaultNamespace>
     <Placeholder>OC_Profinet</Placeholder>
     <Author>SpiraTec AG</Author>
-    <Description>Open Commissioning TwinCAT Profinet Library</Description>
+    <Description>Open Commissioning Library for Profinet devices</Description>
     <DocFormat>reStructuredText</DocFormat>
     <PreserveCompiledLibComments>true</PreserveCompiledLibComments>
     <CombineIds>true</CombineIds>

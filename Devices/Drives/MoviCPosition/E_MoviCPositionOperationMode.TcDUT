@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="E_MoviCPositionOperationMode" Id="{8371eeff-d168-0d73-10e5-272461bb0217}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+TYPE E_MoviCPositionOperationMode :
+(
+	Jog					:= 100, //Position controlled jogging
+	JogNoEnc			:= 101, //Speed controlled jogging
+	SpeedControl		:= 200, //Speed control
+	ReferenceParam		:= 300, //Reference travel, offset via parameter
+	ReferenceBus		:= 301, //Reference travel, offset via fieldbus
+	PositionAbs			:= 400, //Absolute position control
+	PositionRel			:= 401, //Relative position control
+	PositionModPos		:= 402, //Modulo position control, positive
+	PositionModNeg		:= 403, //Modulo position control, negative
+	PositionModShort	:= 404, //Modulo position control, shortest distance
+	EnergyOptimized		:= 1200, //Energieoptimiertes Positionieren
+	MechanicsOptimized	:= 1210	 //Mechanikoptimiertes Positionieren
+)INT;
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

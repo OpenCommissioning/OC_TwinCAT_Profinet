@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_ProfidriveTelegram1" Id="{b5f9a89c-3efe-0e6b-253d-9ba6d895b770}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'reflection'} 
+FUNCTION_BLOCK FB_ProfidriveTelegram1 EXTENDS FB_LinkDataReal
+VAR_INPUT	
+	stControl					: ST_ProfidriveTelegram1_Control;
+	stConfig 					: ST_ProfidriveTelegram1_Config;
+END_VAR
+
+VAR_OUTPUT
+	stStatus					: ST_ProfidriveTelegram1_Status;
+	fValue						: REAL;
+END_VAR
+
+VAR
+    {attribute 'instance-path'} 
+    {attribute 'noinit'} 
+    sPath 						: STRING; 	
+	                        	
+	fbProfidriveGSM				: FB_ProfidriveGSM;	
+	fbMoveVelocity				: FB_MoveVelocity;
+	                        	
+	fAcceleration	 			: REAL;
+	fDeceleration		 		: REAL;
+	fDecelerationQuickStop 		: REAL;
+	fDecelerationCoastStop 		: REAL;
+	bQuickStopExternal			: BOOL;
+	
+	pControlData				: POINTER TO BYTE; //Addr. Process Output, 4 BYTES FROM FIELDBUS
+	pStatusData					: POINTER TO BYTE; //Addr. Process Input, 4 BYTES TO FIELDBUS
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+InitRun();
+
+GetControlData();
+ControlLogic();
+SetStatusData();
+
+]]></ST>
+    </Implementation>
+    <Method Name="AssignProcessData" Id="{5552b4c1-efa6-059c-0b0a-331b3908ca54}">
+      <Declaration><![CDATA[(*Assign Process Data Objects to device*)
+METHOD PUBLIC AssignProcessData : BOOL
+VAR_INPUT
+	aControlData 		: ANY; //Addr. Process Output, 4 BYTES FROM FIELDBUS
+	aStatusData 		: ANY; //Addr. Process Input, 4 BYTES TO FIELDBUS
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.pControlData := aControlData.pValue;
+THIS^.pStatusData := aStatusData.pValue;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ControlLogic" Id="{77ce1af5-ee1f-0136-3194-88ac08d2b7ab}">
+      <Declaration><![CDATA[METHOD INTERNAL ControlLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*Initialize Init Value*)
+IF SUPER^.Status.7 THEN
+	ControlData := StatusData;
+END_IF
+
+(* Call base statemachine *)
+fbProfidriveGSM.bStandstill						:= OC_Core.F_Compare(fbMoveVelocity.fVelocity, 0, 1E-3);
+fbProfidriveGSM.stSTW1.b0_On 					:= stControl.b0_OFF1;
+fbProfidriveGSM.stSTW1.b1_CoastStop 			:= stControl.b1_OFF2;
+fbProfidriveGSM.stSTW1.b2_QuickStop 			:= stControl.b2_OFF3 AND NOT bQuickStopExternal;
+fbProfidriveGSM.stSTW1.b3_EnableOperation		:= stControl.b3_EnableOperation;
+
+(* Preset target values *)
+fbMoveVelocity.fTargetVelocity					:= 0;
+fbMoveVelocity.fAccMax 							:= fAcceleration;
+fbMoveVelocity.fDecMax 							:= fDeceleration;
+
+(* Operation Logic *)
+Operation();
+	
+(* Coast stop, Quick stop, Ramp stop *)
+IF fbProfidriveGSM.eState = E_ProfidriveGSM_State.S1_SwitchingOnInhibited THEN
+	fbMoveVelocity.fTargetVelocity := 0;
+	fbMoveVelocity.fAccMax := fDecelerationCoastStop;
+	fbMoveVelocity.fDecMax := fDecelerationCoastStop;
+ELSIF fbProfidriveGSM.eState = E_ProfidriveGSM_State.S52_QuickStop THEN
+	fbMoveVelocity.fTargetVelocity := 0;
+	fbMoveVelocity.fAccMax := fDecelerationQuickStop;
+	fbMoveVelocity.fDecMax := fDecelerationQuickStop;
+ELSIF fbProfidriveGSM.eState = E_ProfidriveGSM_State.S51_RampStop THEN
+	fbMoveVelocity.fTargetVelocity := 0;
+	fbMoveVelocity.fAccMax := fDeceleration;
+	fbMoveVelocity.fDecMax := fDeceleration;
+END_IF
+
+(* Call MoveVelocity *)
+fbMoveVelocity();
+	
+(* Status word *)
+stStatus.b0_ReadyForSwitchingOn				:= fbProfidriveGSM.stZSW1.b0_ReadyToSwitchOn;	
+stStatus.b1_ReadyForOperation				:= fbProfidriveGSM.stZSW1.b1_ReadyForOperation;
+stStatus.b2_OperationEnabled				:= stControl.b3_EnableOperation;
+stStatus.b3_FaultPresent					:= FALSE;
+stStatus.b4_NoCoastDownActive				:= fbProfidriveGSM.eState <> E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+stStatus.b5_NoQuickStopActive				:= fbProfidriveGSM.eState <> E_ProfidriveGSM_State.S52_QuickStop;
+stStatus.b6_SwitchingOnInhibited			:= fbProfidriveGSM.stZSW1.b6_SwitchingOnInhibited;
+stStatus.b7_AlarmPresent					:= FALSE;
+stStatus.b8_DeviationWithinTolerance		:= TRUE;
+stStatus.b9_ControlRequested				:= stConfig.bControlRequested;
+stStatus.b10_RpmCompValueReachedOrExceeded	:= fbMoveVelocity.bIsReached;
+stStatus.b11_TorqueOrPowerLimitNotReached	:= TRUE;
+stStatus.b12_OpenHoldingBrake 				:= fbProfidriveGSM.eState > E_ProfidriveGSM_State.S3_SwitchedOn;
+stStatus.b13_NoOvertempAlarm				:= TRUE;	
+stStatus.b14_MotorRotatesForwards			:= fbMoveVelocity.fVelocity >= 0;
+stStatus.b15_NoAlarmNoOvertempPowerUnit		:= TRUE;
+
+(* Reset quickstop from extern *)
+IF stControl.b7_AcknowledgeFaults THEN
+	bQuickStopExternal := FALSE;
+END_IF
+
+(* Calculate NIST *)
+IF stConfig.fP2000 = 0 THEN
+	stStatus.nNIst	:= 0;
+ELSE
+	stStatus.nNIst	:=	REAL_TO_INT((fbMoveVelocity.fVelocity * 16#4000) / stConfig.fP2000);
+END_IF
+
+(* Output of actual value *)	
+IF stConfig.bOutputVelocity THEN
+	ControlData := fbMoveVelocity.fVelocity;
+ELSE
+	ControlData := ControlData + fbMoveVelocity.fVelocity *  GVL_Core.fbSystem.fDeltaTime * GVL_Core.fbSystem.fTimeScaling;
+END_IF
+
+fValue := ControlData;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetControlData" Id="{32652f53-007a-0acc-1f42-284b8aede2a9}">
+      <Declaration><![CDATA[METHOD INTERNAL GetControlData : BOOL
+VAR	
+	nBufferWord 	: WORD;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pControlData <= 0 THEN RETURN; END_IF
+
+F_Memcpy(ADR(stControl), pControlData, 2, stConfig.bSwapProcessData);
+F_Memcpy(ADR(stControl) + 2, pControlData + 2, 2, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InitRun" Id="{15c4b193-c5a7-0362-12c7-5ef3e89884bc}">
+      <Declaration><![CDATA[METHOD INTERNAL InitRun : BOOL
+VAR_INST
+	bInitRun : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT bInitRun THEN RETURN; END_IF
+bInitRun := FALSE;
+
+IF pControlData = 0 OR pStatusData = 0 THEN
+	ADSLOGSTR(ADSLOG_MSGTYPE_WARN, CONCAT(sPath, ': %s'), 'Plc address not set.');
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Operation" Id="{66395c55-390d-0893-0dc5-10a128ad49c6}">
+      <Declaration><![CDATA[METHOD PRIVATE Operation : BOOL
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF fbProfidriveGSM.eState = E_ProfidriveGSM_State.S4_Operation THEN	
+	// Main setpoint
+	IF NOT stControl.b8_Jog1 AND NOT stControl.b9_Jog2 THEN
+		fbMoveVelocity.fTargetVelocity := (stControl.nNSoll * stConfig.fP2000) / 16#4000;
+	// Jog 1
+	ELSIF stControl.b8_Jog1 AND NOT stControl.b9_Jog2 THEN
+		fbMoveVelocity.fTargetVelocity := stConfig.fP1058;
+	// Jog 2
+	ELSIF NOT stControl.b8_Jog1 AND stControl.b9_Jog2 THEN	
+		fbMoveVelocity.fTargetVelocity := stConfig.fP1059;
+	END_IF
+	// Stop
+	IF NOT stControl.b4_OperatingCondition OR NOT stControl.b6_EnableSetpoint THEN
+		fbMoveVelocity.fTargetVelocity := 0;
+	END_IF
+	// Invert velocity
+	IF stControl.b11_SetpointInversion THEN
+		fbMoveVelocity.fTargetVelocity := -fbMoveVelocity.fTargetVelocity;
+	END_IF	
+	// Hold velocity
+	IF NOT stControl.b5_ContinueRampFunctionGenerator AND NOT stControl.b8_Jog1 AND NOT stControl.b9_Jog2 THEN
+		fbMoveVelocity.fTargetVelocity := fbMoveVelocity.fVelocity;
+	END_IF	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetStatusData" Id="{9d81297a-bd84-0708-00f9-d70557df453d}">
+      <Declaration><![CDATA[METHOD INTERNAL SetStatusData]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pStatusData <= 0 THEN RETURN; END_IF
+
+F_Memcpy(pStatusData, ADR(stStatus), 2, stConfig.bSwapProcessData);
+F_Memcpy(pStatusData + 2, ADR(stStatus) + 2, 2, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SendDpConfig" Id="{f464b77f-746f-0396-2c2c-8681a9bdcae0}">
+    <Declaration><![CDATA[TYPE ST_SendDpConfig :
+STRUCT
+	nDpDpId			 			: UINT := 0;
+	fTimeout		 			: REAL := 0.5;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

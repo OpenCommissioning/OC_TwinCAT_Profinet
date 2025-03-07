@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_ProfiidriveGSM_STW1" Id="{99124a78-f6c2-0c02-2e3b-796aa62109cb}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_ProfiidriveGSM_STW1 :
+STRUCT
+	b0_On 							: BIT; 	//ON/OFF (OFF1)
+	b1_CoastStop					: BIT; 	//The axis will not coast stop if this bit is set (OFF2)
+	b2_QuickStop					: BIT; 	//The axis will not execute quick stop if this bit is set. Quick stop executes a controlled stop on the axis. (OFF3)
+	b3_EnableOperation				: BIT; 	//The axis will enable and execute command if all preconditions are set. If a Wake and Shake procedure has to be executed as part of enabling, the transition to state "S4: Operation Enabled" is delayed until the procedure is finished.
+	b4_Reserve						: BIT;	//Reserve
+	b5_Reserve						: BIT;	//Reserve
+	b6_Reserve						: BIT;	//Reserve
+	b7_FaultAcknowledge				: BIT;	//Set this bit to reset faults on the drive.
+	b8_Reserve						: BIT;	//Reserve
+	b9_Reserve						: BIT;	//Reserve	
+	b10_ControlPlc					: BIT;	//When not set, no command is accepted from the PLC.	
+	b11_Reserved					: BIT;	//Reserve
+	b12_Reserved					: BIT;	//Reserve
+	b13_Reserved					: BIT;	//Reserve
+	b14_Reserved					: BIT;	//Reserve
+	b15_Reserved					: BIT;	//Reserve
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_ProfidriveGSM" Id="{67f99ce3-3e85-0713-170c-0cb2b056b330}" SpecialFunc="None">
+    <Declaration><![CDATA[// Profidrive General State Machine
+FUNCTION_BLOCK INTERNAL FB_ProfidriveGSM
+VAR_INPUT
+	bPowerOn					: BOOL := TRUE;
+	bStandstill					: BOOL;
+	stSTW1 						: ST_ProfiidriveGSM_STW1;
+END_VAR
+
+VAR_OUTPUT
+	stZSW1						: ST_ProfiidriveGSM_ZSW1;
+END_VAR
+
+VAR	
+	_eState 					: E_ProfidriveGSM_State := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;	
+	rTrig_QuickStop 			: R_TRIG;
+	rTrig_Reset 				: R_TRIG;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE _eState OF 
+	E_ProfidriveGSM_State.S0_Disabled : S0_Disabled();
+	E_ProfidriveGSM_State.S1_SwitchingOnInhibited : S1_SwitchingOnInhibited();
+	E_ProfidriveGSM_State.S2_ReadyForSwitchingOn : S2_ReadyForSwitchingOn();
+	E_ProfidriveGSM_State.S3_SwitchedOn : S3_SwitchedOn();
+	E_ProfidriveGSM_State.S4_Operation : S4_Operation();
+	E_ProfidriveGSM_State.S51_RampStop : S51_RampStop();
+	E_ProfidriveGSM_State.S52_QuickStop : S52_QuickStop();
+END_CASE]]></ST>
+    </Implementation>
+    <Property Name="eState" Id="{b570af51-38cb-0033-2745-17282cc6abde}">
+      <Declaration><![CDATA[PROPERTY eState : E_ProfidriveGSM_State]]></Declaration>
+      <Get Name="Get" Id="{8deb4a10-0007-075c-13d2-4ea7bf51c2c8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[eState := _eState;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{e57f1bbb-544e-0a4e-23ee-f9fbf2a52f32}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_eState := eState;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="nControl" Id="{f5610fa4-d503-05b0-2eee-6d4e60804b02}">
+      <Declaration><![CDATA[PROPERTY PUBLIC nControl : WORD]]></Declaration>
+      <Get Name="Get" Id="{3babe67c-6d99-0bca-0658-fb56258d813d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[MEMCPY(ADR(nControl), ADR(stSTW1), 2);]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{0cdd3eae-9953-0368-183f-6dcbf3863d9f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[MEMCPY(ADR(stSTW1), ADR(nControl), 2);]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="nStatus" Id="{4c29ab76-75df-0f81-345f-52915a93ce93}">
+      <Declaration><![CDATA[PROPERTY PUBLIC nStatus : WORD]]></Declaration>
+      <Get Name="Get" Id="{b276360f-691e-0714-04b4-06575d4e0af0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[MEMCPY(ADR(nStatus), ADR(stZSW1), 2);]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{1cc70d53-8da3-083d-25f5-11266aa1e8b8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[MEMCPY(ADR(stZSW1), ADR(nStatus), 2);]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="S0_Disabled" Id="{f7118c5e-d202-0088-1b72-b6ba829282df}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD PROTECTED S0_Disabled
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stZSW1.b0_ReadyToSwitchOn 			:= FALSE;				
+stZSW1.b1_ReadyForOperation 		:= FALSE;				
+stZSW1.b2_OperationEnabled 			:= FALSE;					
+stZSW1.b3_FaultPresent 				:= FALSE;						
+stZSW1.b4_CoastStop 				:= FALSE;	 					
+stZSW1.b5_QuickStop 				:= FALSE;						
+stZSW1.b6_SwitchingOnInhibited 		:= FALSE;				
+stZSW1.b7_WarningPresent			:= FALSE;			
+stZSW1.b9_ControlRequested 			:= FALSE;	
+
+(*to S1*)	
+IF bPowerOn THEN
+	_eState := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+END_IF		]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S1_SwitchingOnInhibited" Id="{8b1f936f-1181-0c94-2d99-7f7ccdd15167}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S1_SwitchingOnInhibited
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stZSW1.b0_ReadyToSwitchOn 		:= FALSE;				
+stZSW1.b1_ReadyForOperation 		:= FALSE;				
+stZSW1.b2_OperationEnabled 		:= FALSE;						
+stZSW1.b6_SwitchingOnInhibited 	:= TRUE;
+
+(*to S2_ReadyForSwitchingOn*)	
+IF NOT stSTW1.b0_On AND stSTW1.b1_CoastStop AND stSTW1.b2_QuickStop THEN
+	_eState := E_ProfidriveGSM_State.S2_ReadyForSwitchingOn;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S2_ReadyForSwitchingOn" Id="{fe11df1e-9b09-052b-2c02-744439a01e9e}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S2_ReadyForSwitchingOn
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stZSW1.b0_ReadyToSwitchOn 		:= TRUE;				
+stZSW1.b1_ReadyForOperation 		:= FALSE;				
+stZSW1.b2_OperationEnabled 		:= FALSE;						
+stZSW1.b6_SwitchingOnInhibited 	:= FALSE;
+
+(*to S1_SwitchingOnInhibited*)	
+IF NOT stSTW1.b1_CoastStop OR NOT stSTW1.b2_QuickStop THEN
+	_eState := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+	RETURN;
+END_IF
+
+(*to S3_SwitchedOn*)	
+IF stSTW1.b0_On THEN
+	_eState := E_ProfidriveGSM_State.S3_SwitchedOn;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S3_SwitchedOn" Id="{440ac6c8-579f-001b-2676-b150543197f5}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S3_SwitchedOn
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stZSW1.b0_ReadyToSwitchOn 		:= TRUE;				
+stZSW1.b1_ReadyForOperation 		:= TRUE;				
+stZSW1.b2_OperationEnabled 		:= FALSE;						
+stZSW1.b6_SwitchingOnInhibited 	:= FALSE;
+
+(*to S1_SwitchingOnInhibited*)	
+IF NOT stSTW1.b1_CoastStop OR NOT stSTW1.b2_QuickStop THEN
+	_eState := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+	RETURN;
+END_IF
+
+(*to S2_ReadyForSwitchingOn*)	
+IF NOT stSTW1.b0_On THEN
+	_eState := E_ProfidriveGSM_State.S2_ReadyForSwitchingOn;
+	RETURN;
+END_IF
+
+(*to S4_Operation*)	
+IF stSTW1.b3_EnableOperation THEN
+	_eState := E_ProfidriveGSM_State.S4_Operation;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S4_Operation" Id="{09212b6c-e90e-0497-1e0b-9f10472dcf37}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S4_Operation
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stZSW1.b0_ReadyToSwitchOn 		:= TRUE;				
+stZSW1.b1_ReadyForOperation 		:= TRUE;				
+stZSW1.b2_OperationEnabled 		:= TRUE;					
+stZSW1.b6_SwitchingOnInhibited 	:= FALSE;
+
+(*to S1_SwitchingOnInhibited*)	
+IF NOT stSTW1.b1_CoastStop THEN
+	_eState := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+	RETURN;
+END_IF
+
+(*to S52_QuickStop*)	
+IF NOT stSTW1.b2_QuickStop THEN
+	_eState := E_ProfidriveGSM_State.S52_QuickStop;
+	RETURN;
+END_IF
+
+(*to S51_RampStop*)	
+IF NOT stSTW1.b0_On THEN
+	_eState := E_ProfidriveGSM_State.S51_RampStop;
+	RETURN;
+END_IF
+
+(*to S3_SwitchedOn*)	
+IF NOT stSTW1.b3_EnableOperation THEN
+	_eState := E_ProfidriveGSM_State.S3_SwitchedOn;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S51_RampStop" Id="{9a23a23b-6923-02b2-3ab0-7ffcb038c1a9}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S51_RampStop
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stZSW1.b0_ReadyToSwitchOn 		:= TRUE;				
+stZSW1.b1_ReadyForOperation 		:= TRUE;				
+stZSW1.b2_OperationEnabled 		:= FALSE;					
+stZSW1.b6_SwitchingOnInhibited 	:= FALSE;
+
+(*to S1_SwitchingOnInhibited*)	
+IF NOT stSTW1.b1_CoastStop THEN
+	_eState := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+	RETURN;
+END_IF
+
+(*to S52_QuickStop*)	
+IF NOT stSTW1.b2_QuickStop THEN
+	_eState := E_ProfidriveGSM_State.S52_QuickStop;
+	RETURN;
+END_IF
+
+(*to S2_ReadyForSwitchingOn*)	
+IF NOT stSTW1.b3_EnableOperation OR bStandstill THEN
+	_eState := E_ProfidriveGSM_State.S2_ReadyForSwitchingOn;
+END_IF
+
+(*to S4_Operation*)	
+IF stSTW1.b0_On THEN
+	_eState := E_ProfidriveGSM_State.S4_Operation;
+	RETURN;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="S52_QuickStop" Id="{fe46200a-5223-0841-0e46-ed8ae8fc8e65}">
+      <Declaration><![CDATA[{ attribute 'hide' }
+METHOD INTERNAL S52_QuickStop
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stZSW1.b0_ReadyToSwitchOn 		:= TRUE;				
+stZSW1.b1_ReadyForOperation 		:= TRUE;				
+stZSW1.b2_OperationEnabled 		:= FALSE;					
+stZSW1.b6_SwitchingOnInhibited 	:= FALSE;
+
+(*to S1_SwitchingOnInhibited*)	
+IF NOT stSTW1.b1_CoastStop THEN
+	_eState := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+	RETURN;
+END_IF
+
+(*to S1_SwitchingOnInhibited*)	
+IF NOT stSTW1.b3_EnableOperation OR bStandstill THEN
+	_eState := E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

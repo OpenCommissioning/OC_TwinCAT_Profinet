@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_SendDp" Id="{26f86fa0-8e15-0f1c-228a-ac391c64c017}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'reflection'} 
+FUNCTION_BLOCK FB_SendDp EXTENDS FB_Base
+VAR_INPUT
+	stDevData			: ST_SendDpDevData;
+	stConfig 			: ST_SendDpConfig;
+END_VAR
+
+VAR_OUTPUT
+	stHstData			: ST_SendDpHstData;
+END_VAR
+
+VAR
+    {attribute 'instance-path'} 
+    {attribute 'noinit'} 
+    sPath 				: STRING; 
+	pControlData			: POINTER TO BYTE;
+	pStatusData				: POINTER TO BYTE;
+	stCtrl				: ST_SendDpCtrl; 
+	stStatus			: ST_SendDpStatus; 
+	nLastSequenceNumber	: WORD;
+	nSendSequenceNumber	: WORD;
+	nCalculatedCrc		: WORD;	
+	TonTimeout			: TON;
+END_VAR
+
+VAR CONSTANT
+	nPolynom			: WORD := 16#4EAB;
+END_VAR
+
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+InitRun();
+ReadBus();
+ControlLogic();
+WriteBus();
+]]></ST>
+    </Implementation>
+    <Method Name="AssignProcessData" Id="{f1da22bb-2c71-055e-277e-e502244a4751}">
+      <Declaration><![CDATA[(*Assign Process Data Objects to device*)
+METHOD PUBLIC AssignProcessData : BOOL
+VAR_INPUT
+	aControlData 		: ANY; //Addr. Process Output 6 bytes
+	aStatusData 		: ANY; //Addr. Process Input 12 bytes
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.pControlData := aControlData.pValue;
+THIS^.pStatusData := aStatusData.pValue;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ControlLogic" Id="{bc5bb0e4-965e-0eaf-151c-8829a3c104a7}">
+      <Declaration><![CDATA[METHOD INTERNAL ControlLogic]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* Simplified communication when using PLCSIM Adv. *)
+	IF OC_Core.GVL_Core.fbSystem.eControllerType = E_ControllerType.PlcSimAdvanced THEN
+		SimLogic();
+		RETURN;
+	END_IF
+
+(* Calculate received crc *)
+	nCalculatedCrc := F_CalcCrc16(ADR(stCtrl), 2, stConfig.nDpDpId, nPolynom);
+
+(* Restart timer, if sequence number has changed *)
+	IF stCtrl.nRcvSequenceNumber <> nLastSequenceNumber THEN
+		TonTimeout.IN		:= FALSE;
+		nLastSequenceNumber := stCtrl.nRcvSequenceNumber;
+		stHstData.bError	:= FALSE;
+		stHstData.bSubsOn	:= FALSE;
+	ELSE
+		TonTimeout.IN		:= TRUE;
+	END_IF
+
+(* Check if timer has expired *)
+	TonTimeout();
+	
+	IF TonTimeout.Q	THEN
+		TonTimeout.IN		:= FALSE;
+		nSendSequenceNumber := 0;
+		stHstData.bError	:= TRUE;
+		stHstData.bSubsOn	:= TRUE;
+	END_IF
+
+(* compare received crc value with calculated crc *)
+	IF stCtrl.nRcvCrc = nCalculatedCrc THEN
+		IF nSendSequenceNumber = stCtrl.nRcvSequenceNumber THEN
+			IF nSendSequenceNumber = 0 THEN
+				nSendSequenceNumber := 1;
+			ELSE
+				nSendSequenceNumber := nSendSequenceNumber + 1;
+			END_IF
+		END_IF
+	END_IF
+
+(* Limit sequence number to 32767 *)
+	IF nSendSequenceNumber > 32767 THEN
+		nSendSequenceNumber := 1;
+	END_IF
+
+(* Send data *)
+	stStatus.nSendBoolData.0 		:= stDevData.bSend00;
+	stStatus.nSendBoolData.1 		:= stDevData.bSend01;
+	stStatus.nSendBoolData.2 		:= stDevData.bSend02;
+	stStatus.nSendBoolData.3 		:= stDevData.bSend03;
+	stStatus.nSendBoolData.4 		:= stDevData.bSend04;
+	stStatus.nSendBoolData.5 		:= stDevData.bSend05;
+	stStatus.nSendBoolData.6 		:= stDevData.bSend06;
+	stStatus.nSendBoolData.7 		:= stDevData.bSend07;
+	stStatus.nSendBoolData.8 		:= stDevData.bSend08;
+	stStatus.nSendBoolData.9 		:= stDevData.bSend09;
+	stStatus.nSendBoolData.10 		:= stDevData.bSend10;
+	stStatus.nSendBoolData.11 		:= stDevData.bSend11;
+	stStatus.nSendBoolData.12 		:= stDevData.bSend12;
+	stStatus.nSendBoolData.13 		:= stDevData.bSend13;
+	stStatus.nSendBoolData.14 		:= stDevData.bSend14;
+	stStatus.nSendBoolData.15 		:= stDevData.bSend15;
+	stStatus.nSendInt00				:= stDevData.nSend00;
+	stStatus.nSendInt01				:= stDevData.nSend01;
+	stStatus.nSendData				:= BOOL_TO_WORD(stHstData.bSubsOn);
+	stStatus.nSendSequenceNumber 	:= nSendSequenceNumber;
+	stStatus.nSendCrc 				:= F_CalcCrc16(ADR(stStatus), 8, stConfig.nDpDpId, nPolynom);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InitRun" Id="{55d39e89-0493-012b-2175-48d3a2f07d40}">
+      <Declaration><![CDATA[METHOD INTERNAL InitRun : BOOL
+VAR_INST
+	bInitRun : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT bInitRun THEN RETURN; END_IF
+bInitRun := FALSE;
+
+IF pControlData = 0 OR pStatusData = 0 THEN
+	ADSLOGSTR(ADSLOG_MSGTYPE_WARN, CONCAT(sPath, ': %s'), 'Plc address not set.');
+END_IF
+
+TonTimeout.PT := REAL_TO_TIME(stConfig.fTimeout);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="PlcAddress" Id="{a7b42496-0e65-0947-34ca-f719d29cb9e3}">
+      <Declaration><![CDATA[METHOD PUBLIC PlcAddress
+VAR_INPUT
+	I :	ANY; // Must be 6 bytes 
+	Q :	ANY; // Must be 12 bytes
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[pControlData := Q.pValue;
+pStatusData := I.pValue;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReadBus" Id="{e64935f6-fd97-03a0-29aa-04dffddb87b5}">
+      <Declaration><![CDATA[METHOD INTERNAL ReadBus
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pControlData = 0 THEN
+	RETURN;
+END_IF
+
+stCtrl.nRcvData 			:= pControlData[0] + pControlData[1] * 16#100;
+stCtrl.nRcvSequenceNumber 	:= pControlData[2] * 16#100 + pControlData[3];
+stCtrl.nRcvCrc 				:= pControlData[4] * 16#100 + pControlData[5];]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SimLogic" Id="{6e002099-19d4-0d6c-2189-7b88c9b44daf}">
+      <Declaration><![CDATA[METHOD INTERNAL SimLogic
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* No error or substitude values in sim mode *)
+	stHstData.bError 	:= FALSE;
+	stHstData.bSubsOn	:= FALSE;
+
+(* Send data *)
+	stStatus.nSendBoolData.0 		:= stDevData.bSend00;
+	stStatus.nSendBoolData.1 		:= stDevData.bSend01;
+	stStatus.nSendBoolData.2 		:= stDevData.bSend02;
+	stStatus.nSendBoolData.3 		:= stDevData.bSend03;
+	stStatus.nSendBoolData.4 		:= stDevData.bSend04;
+	stStatus.nSendBoolData.5 		:= stDevData.bSend05;
+	stStatus.nSendBoolData.6 		:= stDevData.bSend06;
+	stStatus.nSendBoolData.7 		:= stDevData.bSend07;
+	stStatus.nSendBoolData.8 		:= stDevData.bSend08;
+	stStatus.nSendBoolData.9 		:= stDevData.bSend09;
+	stStatus.nSendBoolData.10 		:= stDevData.bSend10;
+	stStatus.nSendBoolData.11 		:= stDevData.bSend11;
+	stStatus.nSendBoolData.12 		:= stDevData.bSend12;
+	stStatus.nSendBoolData.13 		:= stDevData.bSend13;
+	stStatus.nSendBoolData.14 		:= stDevData.bSend14;
+	stStatus.nSendBoolData.15 		:= stDevData.bSend15;
+	stStatus.nSendInt00				:= stDevData.nSend00;
+	stStatus.nSendInt01				:= stDevData.nSend01;
+	stStatus.nSendData				:= 16#80;
+	stStatus.nSendSequenceNumber 	:= 16#FFFF;
+	stStatus.nSendCrc 				:= F_CalcCrc16(ADR(stStatus), 8, stConfig.nDpDpId, nPolynom);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="WriteBus" Id="{235fb500-2f08-07ee-0ae7-1999c1bd5edf}">
+      <Declaration><![CDATA[METHOD INTERNAL WriteBus
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pStatusData = 0 THEN
+	RETURN;
+END_IF
+
+memcpy(pStatusData, ADR(stStatus.nSendBoolData), 2);
+       
+memcpy(pStatusData + 2, ADR(stStatus.nSendInt00) + 1, 1);
+memcpy(pStatusData + 3, ADR(stStatus.nSendInt00), 1);
+       
+memcpy(pStatusData + 4, ADR(stStatus.nSendInt01) + 1, 1);
+memcpy(pStatusData + 5, ADR(stStatus.nSendInt01), 1);
+              
+memcpy(pStatusData + 6, ADR(stStatus.nSendData), 2);
+              
+memcpy(pStatusData + 8, ADR(stStatus.nSendSequenceNumber) + 1, 1);
+memcpy(pStatusData + 9, ADR(stStatus.nSendSequenceNumber), 1);
+               
+memcpy(pStatusData + 10, ADR(stStatus.nSendCrc) + 1, 1);
+memcpy(pStatusData + 11, ADR(stStatus.nSendCrc), 1);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

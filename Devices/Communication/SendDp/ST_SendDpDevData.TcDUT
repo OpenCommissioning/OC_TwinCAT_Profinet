@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SendDpDevData" Id="{4198ec67-890e-06cb-26bf-fee31c67b93c}">
+    <Declaration><![CDATA[TYPE ST_SendDpDevData :
+STRUCT
+	bSend00		: BOOL;
+	bSend01		: BOOL;
+	bSend02		: BOOL;
+	bSend03		: BOOL;
+	bSend04		: BOOL;
+	bSend05		: BOOL;
+	bSend06		: BOOL;
+	bSend07		: BOOL;
+	bSend08		: BOOL;
+	bSend09		: BOOL;
+	bSend10		: BOOL;
+	bSend11		: BOOL;
+	bSend12		: BOOL;
+	bSend13		: BOOL;
+	bSend14		: BOOL;
+	bSend15		: BOOL;
+	nSend00		: INT;
+	nSend01		: INT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

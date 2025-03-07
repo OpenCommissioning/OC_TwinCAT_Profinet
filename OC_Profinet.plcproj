@@ -29,7 +29,7 @@
     <Released>false</Released>
     <Company>Open Commissioning</Company>
     <Title>OC_Profinet</Title>
-    <ProjectVersion>0.0.0</ProjectVersion>
+    <ProjectVersion>0.0.1</ProjectVersion>
     <DefaultNamespace>OC_Profinet</DefaultNamespace>
     <Placeholder>OC_Profinet</Placeholder>
     <Author>SpiraTec AG</Author>
@@ -72,19 +72,29 @@
     <Folder Include="Common\ProfidriveBaseState" />
     <Folder Include="Common\ProfidriveParamInterpreter" />
     <Folder Include="Devices" />
+    <Folder Include="Devices\Communication\RcvDp" />
+    <Folder Include="Devices\Communication\SendDp" />
     <Folder Include="Devices\Drives" />
-    <Folder Include="Devices\Drives\Danfoss_VLT_MCA_120" />
-    <Folder Include="Devices\Drives\ProfidriveCu" />
-    <Folder Include="Devices\Drives\ProfidriveTel1" />
+    <Folder Include="Devices\Drives\Danfoss_VLT_MCA_120">
+      <ExcludeFromBuild>true</ExcludeFromBuild>
+    </Folder>
+    <Folder Include="Devices\Drives\MoviCPosition" />
+    <Folder Include="Devices\Drives\MoviCVelocity" />
+    <Folder Include="Devices\Drives\MovisafeCSSx1a" />
+    <Folder Include="Devices\Drives\MovisafeCSBx1a" />
+    <Folder Include="Devices\Drives\ProfidriveGSM" />
+    <Folder Include="Devices\Drives\ProfidriveCu">
+      <ExcludeFromBuild>true</ExcludeFromBuild>
+    </Folder>
+    <Folder Include="Devices\Drives\ProfidriveTelegram1">
+      <ExcludeFromBuild>false</ExcludeFromBuild>
+    </Folder>
     <Folder Include="Common" />
+    <Folder Include="Devices\Communication" />
+    <Folder Include="Tests" />
+    <Folder Include="Tests\Drives" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\ProfidriveBaseState\E_ProfidriveBaseState.TcTLEO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Common\ProfidriveBaseState\FB_ProfidriveBaseState.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Common\ProfidriveParamInterpreter\E_ProfidriveParamFormat.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -95,6 +105,45 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Common\ProfidriveParamInterpreter\ST_ProfidriveParamSet.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\F_CalcCrc16.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\RcvDp\FB_RcvDp.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpConfig.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpCtrl.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpDevData.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpHstData.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpStatus.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\SendDp\FB_SendDp.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\SendDp\ST_SendDpConfig.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\SendDp\ST_SendDpCtrl.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\SendDp\ST_SendDpDevData.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\SendDp\ST_SendDpHstData.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Communication\SendDp\ST_SendDpStatus.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Devices\Drives\Danfoss_VLT_MCA_120\FB_Danfoss_VLT_MCA_120.TcPOU">
@@ -109,6 +158,69 @@
     <Compile Include="Devices\Drives\Danfoss_VLT_MCA_120\ST_Danfoss_VLT_MCA_120_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Devices\Drives\MoviCPosition\E_MoviCPositionOperationMode.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCPosition\FB_MoviCPosition.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCPosition\ST_MoviCPosition_Control.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCPosition\ST_MoviCPosition_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCPosition\ST_MoviCPosition_Config.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCVelocity\FB_MoviCVelocity.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCVelocity\ST_MoviCVelocity_Config.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCVelocity\ST_MoviCVelocity_Control.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MoviCVelocity\ST_MoviCVelocity_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSBx1a\ST_MovisafeCSBx1a_Config.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSSx1a\FB_MovisafeCSSx1a.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSSx1a\ST_MovisafeCSSx1a_Config.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSSx1a\ST_MovisafeCSSx1a_Control.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSSx1a\ST_MovisafeCSSx1a_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSBx1a\FB_MovisafeCSBx1a.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSBx1a\ST_MovisafeCSBx1a_Control.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\MovisafeCSBx1a\ST_MovisafeCSBx1a_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\ProfidriveGSM\E_ProfidriveGSM_State.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\ProfidriveGSM\FB_ProfidriveGSM.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\ProfidriveGSM\ST_ProfiidriveGSM_STW1.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Devices\Drives\ProfidriveGSM\ST_ProfiidriveGSM_ZSW1.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Devices\Drives\ProfidriveCu\FB_ProfidriveCu.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -118,16 +230,28 @@
     <Compile Include="Devices\Drives\ProfidriveCu\ST_ProfidriveCuConfig.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTel1\FB_ProfidriveTel1.TcPOU">
+    <Compile Include="Devices\Drives\ProfidriveTelegram1\FB_ProfidriveTelegram1.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTel1\ST_ProfidriveTel1Config.TcDUT">
+    <Compile Include="Devices\Drives\ProfidriveTelegram1\ST_ProfidriveTelegram1_Config.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTel1\ST_ProfidriveTel1Ctrl.TcDUT">
+    <Compile Include="Devices\Drives\ProfidriveTelegram1\ST_ProfidriveTelegram1_Control.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTel1\ST_ProfidriveTel1Status.TcDUT">
+    <Compile Include="Devices\Drives\ProfidriveTelegram1\ST_ProfidriveTelegram1_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Drives\FB_ProfidriveGSM_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Drives\FB_ProfidriveTelegram1_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\PRG_TEST.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -139,8 +263,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-        <Data>
-          <o xml:space="preserve" t="OptionKey">
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -232,17 +356,106 @@
             <v>IR0whWr8bwfwBwAAiD2qpQAAAABVAgAA37x72QAAAAABAAAAAAAAAAEaUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwACTHsAZgA5ADUAYgBiADQAMgA2AC0ANQA1ADIANAAtADQAYgA0ADUALQA5ADQAMAAwAC0AZgBiADAAZgAyAGUANwA3AGUANQAxAGIAfQADCE4AYQBtAGUABDBUAHcAaQBuAEMAQQBUACAAMwAuADEAIABCAHUAaQBsAGQAIAA0ADAAMgA0AC4ANwAFFlAAcgBvAGYAaQBsAGUARABhAHQAYQAGTHsAMQA2AGUANQA1AGIANgAwAC0ANwAwADQAMwAtADQAYQA2ADMALQBiADYANQBiAC0ANgAxADQANwAxADMAOAA3ADgAZAA0ADIAfQAHEkwAaQBiAHIAYQByAGkAZQBzAAhMewAzAGIAZgBkADUANAA1ADkALQBiADAANwBmAC0ANABkADYAZQAtAGEAZQAxAGEALQBhADgAMwAzADUANgBhADUANQAxADQAMgB9AAlMewA5AGMAOQA1ADgAOQA2ADgALQAyAGMAOAA1AC0ANAAxAGIAYgAtADgAOAA3ADEALQA4ADkANQBmAGYAMQBmAGUAZABlADEAYQB9AAoOVgBlAHIAcwBpAG8AbgALBmkAbgB0AAwKVQBzAGEAZwBlAA0KVABpAHQAbABlAA4aVgBpAHMAdQBFAGwAZQBtAE0AZQB0AGUAcgAPDkMAbwBtAHAAYQBuAHkAEAxTAHkAcwB0AGUAbQARElYAaQBzAHUARQBsAGUAbQBzABIwVgBpAHMAdQBFAGwAZQBtAHMAUwBwAGUAYwBpAGEAbABDAG8AbgB0AHIAbwBsAHMAEyhWAGkAcwB1AEUAbABlAG0AcwBXAGkAbgBDAG8AbgB0AHIAbwBsAHMAFCRWAGkAcwB1AEUAbABlAG0AVABlAHgAdABFAGQAaQB0AG8AcgAVIlYAaQBzAHUATgBhAHQAaQB2AGUAQwBvAG4AdAByAG8AbAAWFHYAaQBzAHUAaQBuAHAAdQB0AHMAFwxzAHkAcwB0AGUAbQAYGFYAaQBzAHUARQBsAGUAbQBCAGEAcwBlABkmRABlAHYAUABsAGEAYwBlAGgAbwBsAGQAZQByAHMAVQBzAGUAZAAaCGIAbwBvAGwAGyJQAGwAdQBnAGkAbgBDAG8AbgBzAHQAcgBhAGkAbgB0AHMAHEx7ADQAMwBkADUAMgBiAGMAZQAtADkANAAyAGMALQA0ADQAZAA3AC0AOQBlADkANAAtADEAYgBmAGQAZgAzADEAMABlADYAMwBjAH0AHRxBAHQATABlAGEAcwB0AFYAZQByAHMAaQBvAG4AHhRQAGwAdQBnAGkAbgBHAHUAaQBkAB8WUwB5AHMAdABlAG0ALgBHAHUAaQBkACBIYQBmAGMAZAA1ADQANAA2AC0ANAA5ADEANAAtADQAZgBlADcALQBiAGIANwA4AC0AOQBiAGYAZgBlAGIANwAwAGYAZAAxADcAIRRVAHAAZABhAHQAZQBJAG4AZgBvACJMewBiADAAMwAzADYANgBhADgALQBiADUAYwAwAC0ANABiADkAYQAtAGEAMAAwAGUALQBlAGIAOAA2ADAAMQAxADEAMAA0AGMAMwB9ACMOVQBwAGQAYQB0AGUAcwAkTHsAMQA4ADYAOABmAGYAYwA5AC0AZQA0AGYAYwAtADQANQAzADIALQBhAGMAMAA2AC0AMQBlADMAOQBiAGIANQA1ADcAYgA2ADkAfQAlTHsAYQA1AGIAZAA0ADgAYwAzAC0AMABkADEANwAtADQAMQBiADUALQBiADEANgA0AC0ANQBmAGMANgBhAGQAMgBiADkANgBiADcAfQAmFk8AYgBqAGUAYwB0AHMAVAB5AHAAZQAnVFUAcABkAGEAdABlAEwAYQBuAGcAdQBhAGcAZQBNAG8AZABlAGwARgBvAHIAQwBvAG4AdgBlAHIAdABpAGIAbABlAEwAaQBiAHIAYQByAGkAZQBzACgQTABpAGIAVABpAHQAbABlACkUTABpAGIAQwBvAG0AcABhAG4AeQAqHlUAcABkAGEAdABlAFAAcgBvAHYAaQBkAGUAcgBzACs4UwB5AHMAdABlAG0ALgBDAG8AbABsAGUAYwB0AGkAbwBuAHMALgBIAGEAcwBoAHQAYQBiAGwAZQAsEnYAaQBzAHUAZQBsAGUAbQBzAC1INgBjAGIAMQBjAGQAZQAxAC0AZAA1AGQAYwAtADQAYQAzAGIALQA5ADAANQA0AC0AMgAxAGYAYQA3ADUANgBhADMAZgBhADQALihJAG4AdABlAHIAZgBhAGMAZQBWAGUAcgBzAGkAbwBuAEkAbgBmAG8AL0x7AGMANgAxADEAZQA0ADAAMAAtADcAZgBiADkALQA0AGMAMwA1AC0AYgA5AGEAYwAtADQAZQAzADEANABiADUAOQA5ADYANAAzAH0AMBhNAGEAagBvAHIAVgBlAHIAcwBpAG8AbgAxGE0AaQBuAG8AcgBWAGUAcgBzAGkAbwBuADIMTABlAGcAYQBjAHkAMzBMAGEAbgBnAHUAYQBnAGUATQBvAGQAZQBsAFYAZQByAHMAaQBvAG4ASQBuAGYAbwA0MEwAbwBhAGQATABpAGIAcgBhAHIAaQBlAHMASQBuAHQAbwBQAHIAbwBqAGUAYwB0ADUaQwBvAG0AcABhAHQAaQBiAGkAbABpAHQAeQDQAAIaA9ADAS0E0AUGGgfQBwgaAUUHCQjQAAkaBEUKCwQDAAAABQAAAA0AAAAAAAAA0AwLrQIAAADQDQEtDtAPAS0Q0AAJGgRFCgsEAwAAAAUAAAANAAAAKAAAANAMC60BAAAA0A0BLRHQDwEtENAACRoERQoLBAMAAAAFAAAADQAAAAAAAADQDAutAgAAANANAS0S0A8BLRDQAAkaBEUKCwQDAAAABQAAAA0AAAAUAAAA0AwLrQIAAADQDQEtE9APAS0Q0AAJGgRFCgsEAwAAAAUAAAANAAAAAAAAANAMC60CAAAA0A0BLRTQDwEtENAACRoERQoLBAMAAAAFAAAADQAAAAAAAADQDAutAgAAANANAS0V0A8BLRDQAAkaBEUKCwQDAAAABQAAAA0AAAAAAAAA0AwLrQIAAADQDQEtFtAPAS0X0AAJGgRFCgsEAwAAAAUAAAANAAAAKAAAANAMC60EAAAA0A0BLRjQDwEtENAZGq0BRRscAdAAHBoCRR0LBAMAAAAFAAAADQAAAAAAAADQHh8tINAhIhoCRSMkAtAAJRoFRQoLBAMAAAADAAAAAAAAAAoAAADQJgutAAAAANADAS0n0CgBLRHQKQEtENAAJRoFRQoLBAMAAAADAAAAAAAAAAoAAADQJgutAQAAANADAS0n0CgBLRHQKQEtEJoqKwFFAAEC0AABLSzQAAEtF9AAHy0t0C4vGgPQMAutAQAAANAxC60XAAAA0DIarQDQMy8aA9AwC60CAAAA0DELrQMAAADQMhqtANA0Gq0A0DUarQA=</v>
           </d>
         </o>
+        <v>{535658C0-5AF5-460d-99A4-BFFB984A829A}</v>
+        <o>
+          <v n="Name">"{535658C0-5AF5-460d-99A4-BFFB984A829A}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="ExactVersionConstraintToSave">
+            <v>VersionConstraint</v>
+            <o>
+              <v n="TheVersion">"3.1.4024.0"</v>
+            </o>
+          </d>
+        </o>
+        <v>{F66C7017-BDD8-4114-926C-81D6D687E35F}</v>
+        <o>
+          <v n="Name">"{F66C7017-BDD8-4114-926C-81D6D687E35F}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>FlagDeclareTip</v>
+            <v>True</v>
+            <v>FlagDeclareCurrentStep</v>
+            <v>True</v>
+            <v>FlagUseTip</v>
+            <v>False</v>
+            <v>FlagDeclareErrorPOU</v>
+            <v>True</v>
+            <v>FlagDeclareInit</v>
+            <v>True</v>
+            <v>FlagDeclareError</v>
+            <v>True</v>
+            <v>FlagUseSFCErrorAnalyzationTable</v>
+            <v>False</v>
+            <v>FlagUseQuitError</v>
+            <v>False</v>
+            <v>CalcActiveTransOnly</v>
+            <v>False</v>
+            <v>FlagDeclareReset</v>
+            <v>True</v>
+            <v>FlagUseError</v>
+            <v>False</v>
+            <v>FlagUsePause</v>
+            <v>False</v>
+            <v>FlagUseTrans</v>
+            <v>False</v>
+            <v>FlagDeclareTrans</v>
+            <v>True</v>
+            <v>FlagUseEnableLimit</v>
+            <v>False</v>
+            <v>FlagDeclarePause</v>
+            <v>True</v>
+            <v>FlagUseInit</v>
+            <v>False</v>
+            <v>FlagDeclareQuitError</v>
+            <v>True</v>
+            <v>FlagUseTipMode</v>
+            <v>False</v>
+            <v>FlagUseErrorStep</v>
+            <v>False</v>
+            <v>FlagDeclareTipMode</v>
+            <v>True</v>
+            <v>FlagDeclareEnableLimit</v>
+            <v>True</v>
+            <v>FlagUseSFCErrorAnalyzation</v>
+            <v>False</v>
+            <v>FlagUseCurrentStep</v>
+            <v>False</v>
+            <v>FlagUseReset</v>
+            <v>False</v>
+            <v>FlagDeclareSFCErrorAnalyzationTable</v>
+            <v>True</v>
+            <v>FlagDeclareErrorStep</v>
+            <v>True</v>
+            <v>FlagDeclareSFCErrorAnalyzation</v>
+            <v>True</v>
+            <v>FlagUseErrorPOU</v>
+            <v>False</v>
+          </d>
+        </o>
+        <v>{E709B08B-B6E4-4966-8EED-D793A13114C6}</v>
+        <o>
+          <v n="Name">"{E709B08B-B6E4-4966-8EED-D793A13114C6}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String">
+            <v>ReplaceConstants</v>
+            <v>false</v>
+            <v>MaxCompilerWarnings</v>
+            <v>100</v>
+          </d>
+        </o>
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-        </Data>
-        <TypeList>
-          <Type n="Boolean">System.Boolean</Type>
-          <Type n="Hashtable">System.Collections.Hashtable</Type>
-          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-          <Type n="String">System.String</Type>
-        </TypeList>
-      </XmlArchive>
+  </Data>
+  <TypeList>
+    <Type n="Boolean">System.Boolean</Type>
+    <Type n="ExactVersionConstraintToSave">{f9079115-a4ba-4f30-bf7c-9e76613146fc}</Type>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="Int32">System.Int32</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+  </TypeList>
+</XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

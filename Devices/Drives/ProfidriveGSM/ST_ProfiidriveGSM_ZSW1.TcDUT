@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_ProfiidriveGSM_ZSW1" Id="{13b588f5-8397-0757-0d26-e312762f32cf}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_ProfiidriveGSM_ZSW1 :
+STRUCT
+	b0_ReadyToSwitchOn 				: BIT; 	//Ready to switch on
+	b1_ReadyForOperation			: BIT; 	//Ready for operation
+	b2_OperationEnabled				: BIT; 	//Operation enabled
+	b3_FaultPresent					: BIT; 	//A fault is present on the axis
+	b4_CoastStop 					: BIT;	//No coast stop is executed (No OFF2 is active)
+	b5_QuickStop					: BIT;	//No quick stop is executed (No OFF3 is active)
+	b6_SwitchingOnInhibited			: BIT;	//Switch-on inhibit Switching on again is only possible through OFF1 and subsequent ON.
+	b7_WarningPresent				: BIT;	//Warning present. The drive is operating. No acknowledgment required
+	b8_Reserve						: BIT;	//Reserve
+	b9_ControlRequested				: BIT;	//Control requested by the master
+	b10_Reserved					: BIT;	//Reserve
+	b11_Reserved					: BIT;	//Reserve
+	b12_Reserved					: BIT;	//Reserve
+	b13_Reserved					: BIT;	//Reserve
+	b14_Reserved					: BIT;	//Reserve
+	b15_Reserved					: BIT;	//Reserve
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

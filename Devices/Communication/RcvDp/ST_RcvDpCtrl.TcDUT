@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_RcvDpCtrl" Id="{1030bd59-2700-0413-00bf-d1f9bf13ed8b}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_RcvDpCtrl :
+STRUCT
+	nRcvBoolData			: WORD;
+	nRcvInt00				: INT;
+	nRcvInt01				: INT;
+	nRcvData				: WORD;
+	nRcvSequenceNumber		: WORD;
+	nRcvCrc					: WORD;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

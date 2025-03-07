@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_MovisafeCSBx1a_Control" Id="{a31978c4-2c4e-0f61-3e2a-c04e05042379}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_MovisafeCSBx1a_Control :
+STRUCT
+	b0_STO1				: BIT; //Sicher abgeschaltetes Drehmoment
+	b1_Reserve			: BIT; //Reserve
+	b2_Reserve			: BIT; //Reserve
+	b3_Reserve			: BIT; //Reserve
+	b4_Reserve			: BIT; //Reserve
+	b5_Reserve			: BIT; //Reserve
+	bQUIT_F_DI			: BIT; //Quittierung der verriegelten Digitaleingänge
+	bQUIT_ERROR			: BIT; //Quittierung der Fehler Sicherheitskarte
+	b8_Reserve			: BIT; //Reserve
+	b9_Reserve			: BIT; //Reserve
+	b10_Reserve			: BIT; //Reserve
+	b11_Reserve			: BIT; //Reserve
+	b12_Reserve			: BIT; //Reserve
+	b13_Reserve			: BIT; //Reserve
+	b14_Reserve			: BIT; //Reserve
+	b15_Reserve			: BIT; //Reserve
+	b16_Reserve			: BIT; //Reserve
+	b17_Reserve			: BIT; //Reserve
+	b18_SSx1			: BIT; //Antriebssicherheitsfunktion SSx1 deaktivieren
+	b19_SSx2			: BIT; //Antriebssicherheitsfunktion SSx2 deaktivieren
+	b20_Reserve			: BIT; //Reserve
+	b21_Reserve			: BIT; //Reserve
+	b22_Reserve			: BIT; //Reserve
+	b23_Reserve			: BIT; //Reserve
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_MoviCVelocity_Config" Id="{97c4e567-bbd9-0c89-2d14-841138991a08}">
+    <Declaration><![CDATA[TYPE ST_MoviCVelocity_Config :
+STRUCT
+	pMovisafeCSSx1a			: POINTER TO FB_MovisafeCSSx1a; //[optional] Pointer to a MovisafeCSSx1a instance
+	nSoftwareLimitMin		: DINT := -2147483648;	//Position limit minimum in LU
+	nSoftwareLimitMax		: DINT := 2147483647;	//Position limit maximum in LU
+	nReferencePos			: DINT := 0;			//Reference position in LU when using mode 300
+	fDecCoastStop			: REAL := 1000.0;		//Deceleration for coast/brake stop in LU/s^2
+	fDecEstop				: REAL := 100.0;		//Deceleration for emergency stop in LU/s^2
+	fDecelerationLimit		: REAL := 100.0;		//Decceleration limit (bus stop) in LU/s^2
+	fRatioVelocity			: REAL := 1.0;			//Ratio for setpoint velocity
+	fRatioAccDec			: REAL := 1.0;			//Ratio for setpoint acceleration/deceleration
+	fRatioPosition			: REAL := 1.0;			//Ratio for position output
+	nJerk					: INT  := 0;			//Jerk from 0 to 100%
+	fPositionOffset			: REAL := 0;
+	fInitPosition			: REAL := 0;
+	fResolution				: REAL := 0.1;
+	bSwapProcessData		: BOOL; //SWAP Process Data from/to FIELDBUS
+	bOutputVelocity			: BOOL := TRUE;		//TRUE: TargetValue = Velocity, FALSE: TargetValue = Position
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

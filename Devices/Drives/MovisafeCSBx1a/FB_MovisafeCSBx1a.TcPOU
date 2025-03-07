@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_MovisafeCSBx1a" Id="{9747d76d-05e4-0c9e-3cf2-948a8fb86bbd}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'reflection'}
+FUNCTION_BLOCK FB_MovisafeCSBx1a EXTENDS FB_DeviceByte
+VAR_INPUT	
+	bF_DI0				: BOOL; //State digital input 1
+	bF_DI1				: BOOL; //State digital input 2
+	bF_DI2				: BOOL; //State digital input 3
+	bF_DI3				: BOOL; //State digital input 4
+	stControl			: ST_MovisafeCSBx1a_Control;
+	stConfig 			: ST_MovisafeCSBx1a_Config;
+END_VAR
+
+VAR_OUTPUT	
+	stStatus			: ST_MovisafeCSBx1a_Status;
+END_VAR
+
+VAR
+    {attribute 'instance-path'} 
+    {attribute 'noinit'} 
+    sPath 				: STRING; 
+	pControlData		: POINTER TO BYTE;
+	pStatusData			: POINTER TO BYTE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+InitRun();
+
+GetControlData();
+ControlLogic();
+SetStatusData();]]></ST>
+    </Implementation>
+    <Method Name="AssignProcessData" Id="{3b19dc64-97a4-07a2-1806-72908f9de6e9}">
+      <Declaration><![CDATA[(*Assign Process Data Objects to device*)
+METHOD PUBLIC AssignProcessData : BOOL
+VAR_INPUT
+	aControlData 		: ANY; //Addr. Process Output 3 Bytes
+	aStatusData 		: ANY; //Addr. Process Input 4 Bytes
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.pControlData := aControlData.pValue;
+THIS^.pStatusData := aStatusData.pValue;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ControlLogic" Id="{5f2fed8b-d9f5-02e4-2472-a3c260e49409}">
+      <Declaration><![CDATA[METHOD INTERNAL ControlLogic : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stStatus.b0_STO_ACTIVE			:= NOT stControl.b0_STO1;
+stStatus.b3_INPUT_DATA_VALID	:= TRUE;
+stStatus.b6_WARNING				:= FALSE;
+stStatus.b7_ERROR_STATE			:= FALSE;
+stStatus.b8_F_DI0				:= bF_DI0;
+stStatus.b9_F_DI1				:= bF_DI1;
+stStatus.b10_F_DI2				:= bF_DI2;
+stStatus.b11_F_DI3				:= bF_DI3;
+stStatus.b18_SSx1				:= stControl.b18_SSx1;
+stStatus.b19_SSx2				:= stControl.b19_SSx2;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetControlData" Id="{d93c50ca-bed7-0f37-0b30-5a41ecb429aa}">
+      <Declaration><![CDATA[METHOD INTERNAL GetControlData
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pControlData <= 0 THEN RETURN; END_IF
+
+F_MEMCPY(ADR(stControl), pControlData, 3, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InitRun" Id="{dab36d35-e501-0b93-25db-fda72a14624b}">
+      <Declaration><![CDATA[METHOD INTERNAL InitRun
+VAR_INST
+	bInitRun : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT bInitRun THEN RETURN; END_IF
+bInitRun := FALSE;
+
+IF pControlData = 0 OR pStatusData = 0 THEN
+	ADSLOGSTR(ADSLOG_MSGTYPE_WARN, CONCAT(sPath, ': %s'), 'Plc address not set.');
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetStatusData" Id="{7923f956-7bc2-0e23-1113-bdf90e35896b}">
+      <Declaration><![CDATA[METHOD INTERNAL SetStatusData
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pStatusData <= 0 THEN RETURN; END_IF
+
+F_MEMCPY(pStatusData, ADR(stStatus), 4, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

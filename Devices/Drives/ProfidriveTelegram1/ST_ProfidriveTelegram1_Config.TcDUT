@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
-  <DUT Name="ST_ProfidriveTel1Config" Id="{fabde8c5-a8b3-0be9-1b90-9d53bab693c7}">
-    <Declaration><![CDATA[TYPE ST_ProfidriveTel1Config :
+  <DUT Name="ST_ProfidriveTelegram1_Config" Id="{fabde8c5-a8b3-0be9-1b90-9d53bab693c7}">
+    <Declaration><![CDATA[TYPE ST_ProfidriveTelegram1_Config :
 STRUCT
 	fRampDownTimeCoastStop 		: REAL := 1.0;		//Coast stop deceleration time in s
 	bControlRequested			: BOOL := TRUE;

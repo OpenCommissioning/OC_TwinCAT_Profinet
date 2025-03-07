@@ -1,0 +1,313 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_MoviCPosition" Id="{bb38fff1-5c6d-05a1-2852-667e71872530}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'reflection'}
+FUNCTION_BLOCK FB_MoviCPosition EXTENDS FB_LinkDataReal
+VAR_INPUT
+	bSTO						: BOOL := TRUE;
+	stControl 					: ST_MoviCPosition_Control;
+	stConfig					: ST_MoviCPosition_Config;
+	nDigitalInputs				: WORD;
+END_VAR
+
+VAR_OUTPUT
+	stStatus					: ST_MoviCPosition_Status;
+	fValue						: REAL;
+END_VAR
+
+VAR
+    {attribute 'instance-path'} 
+    {attribute 'noinit'} 
+    sPath 						: STRING;	                			
+	                			
+	fbBaseState					: FB_ProfidriveGSM;
+	fbBasicDrive				: FB_DriveControl;
+	                				
+	bOpModeValid				: BOOL;
+	pMovisafe					: POINTER TO FB_MovisafeCSSx1a;	
+	
+	pControlData				: POINTER TO BYTE; //Addr. Process Output
+	pStatusData					: POINTER TO BYTE; //Addr. Process Input
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+InitRun();
+
+GetControlData();
+Safety();
+ControlLogic();
+SetStatusData();
+]]></ST>
+    </Implementation>
+    <Method Name="AssignProcessData" Id="{81e2ac24-8c2d-0c05-20e9-65efb166e34d}">
+      <Declaration><![CDATA[(*Assign Process Data Objects to device*)
+METHOD PUBLIC AssignProcessData : BOOL
+VAR_INPUT
+	aControlData 		: ANY; //Addr. Process Output
+	aStatusData 		: ANY; //Addr. Process Input
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.pControlData := aControlData.pValue;
+THIS^.pStatusData := aStatusData.pValue;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ControlLogic" Id="{afba3845-baa8-0bcd-098c-05cf33939653}">
+      <Declaration><![CDATA[METHOD INTERNAL ControlLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Unity Init - Load persistent data
+IF SUPER^.Status.7 THEN
+	IF stConfig.fRatioPosition <> 0 THEN	
+		fbBasicDrive.fPosition := SUPER^.StatusData/stConfig.fRatioPosition - stConfig.fPositionOffset;
+	ELSE
+		fbBasicDrive.fPosition := SUPER^.StatusData - stConfig.fPositionOffset;
+	END_IF
+END_IF
+
+(* Evaluate incoming operation mode *)
+bOpModeValid := FALSE;
+
+CASE stControl.nTargetApplicationMode OF
+	E_MoviCPositionOperationMode.Jog:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.JogNoEnc:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.SpeedControl:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.ReferenceParam:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.ReferenceBus:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.PositionAbs, E_MoviCPositionOperationMode.EnergyOptimized, E_MoviCPositionOperationMode.MechanicsOptimized:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.PositionRel:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.PositionModPos:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.PositionModNeg:
+		bOpModeValid := TRUE;
+	E_MoviCPositionOperationMode.PositionModShort:
+		bOpModeValid := TRUE;
+END_CASE
+
+(* Base state of the controller *)
+fbBaseState.bStandstill := OC_Core.F_Compare(fbBasicDrive.fVelocity, 0, 1E-3);
+fbBaseState.stSTW1.b0_On := stControl.b1_EnableBusStop AND fbBaseState.eState <> E_ProfidriveGSM_State.S1_SwitchingOnInhibited;
+fbBaseState.stSTW1.b1_CoastStop := NOT stControl.b13_ActivateInhibit AND bSTO;
+fbBaseState.stSTW1.b2_QuickStop := stControl.b0_EnableEStop;
+fbBaseState.stSTW1.b3_EnableOperation := stControl.b7_StartStop AND bOpModeValid;
+
+fbBaseState();
+		
+(* Set parameter of basic drive *)
+IF stControl.b12_DisableSoftwareLimits THEN
+	fbBasicDrive.fPositionLimitMin := -2147483648.0;
+	fbBasicDrive.fPositionLimitMax := 2147483647.0;
+	fbBasicDrive.fTolerance := 0.1;
+ELSE
+	fbBasicDrive.fPositionLimitMin := DINT_TO_REAL(stConfig.nSoftwareLimitMin);
+	fbBasicDrive.fPositionLimitMax := DINT_TO_REAL(stConfig.nSoftwareLimitMax);
+	fbBasicDrive.fTolerance := 0.1;
+END_IF
+					
+(* Evaluate base state *)
+CASE fbBaseState.eState OF
+	
+(* S1, S2 or S3 -> Drive coasts to a stop or brake is applied *)
+	E_ProfidriveGSM_State.S1_SwitchingOnInhibited,
+	E_ProfidriveGSM_State.S2_ReadyForSwitchingOn,
+	E_ProfidriveGSM_State.S3_SwitchedOn:
+		fbBasicDrive.Stop(stConfig.fDecCoastStop);
+
+(* S4 -> Evaluate operation mode *)
+	E_ProfidriveGSM_State.S4_Operation:
+		Operation();
+
+(* S5a -> Drive decelerates with application limit *)
+	E_ProfidriveGSM_State.S51_RampStop:
+		fbBasicDrive.Stop(stConfig.fDecelerationLimit);
+		
+(* S5b -> Drive decelerates with emergency stop ramp *)
+	E_ProfidriveGSM_State.S52_QuickStop:
+	    fbBasicDrive.Stop(stConfig.fDecEstop);
+END_CASE
+	
+(* Status Word *)
+stStatus.b0_InverterReady				:= TRUE;
+stStatus.b1_STOInactive					:= bSTO;
+stStatus.b2_PowerStageOn				:= stControl.b13_ActivateInhibit;
+stStatus.b3_BrakeReleased				:= stControl.b1_EnableBusStop OR stControl.b3_ReleaseBrake;
+stStatus.b4_MotorTurning				:= NOT fbBaseState.bStandstill;
+stStatus.b5_DriveReferenced				:= TRUE;
+stStatus.b6_SetpointsActive		 		:= FALSE;
+stStatus.b7_TargetpositionReached		:= fbBasicDrive.bIsPositionReached;	
+stStatus.b8_ErrorActive					:= FALSE;
+stStatus.b9_WarningActive				:= FALSE;
+stStatus.b10_DriveTrain2Active			:= stControl.b10_ActivateDriveTrain2;
+stStatus.b11_SpeedSetpointReached		:= fbBasicDrive.bIsMoving;
+stStatus.b12_SoftwareLimitsDisabled		:= stControl.b12_DisableSoftwareLimits;
+stStatus.b13_OutputStageInhibit			:= fbBaseState.stZSW1.b6_SwitchingOnInhibited;
+stStatus.b14_StandByModeActive			:= stControl.b14_ActivateStandByMode;
+stStatus.b15_MovikitHeartbeat			:= stControl.b15_MovikitHeartbeat;
+
+(* Status values *)
+stStatus.nActualSpeed := REAL_TO_INT(fbBasicDrive.fVelocity / stConfig.fRatioVelocity);
+stStatus.nActualStatus := 0;
+stStatus.nActualTorque := 0;
+stStatus.nDigitalInputs := nDigitalInputs;
+IF bOpModeValid THEN
+	stStatus.nActualApplicationMode := stControl.nTargetApplicationMode;
+END_IF
+stStatus.nActualPosition := REAL_TO_DINT(fbBasicDrive.fPosition);
+	
+(* Position output *)
+THIS^.ControlData := fbBasicDrive.fPosition * stConfig.fRatioPosition + stConfig.fPositionOffset;
+fValue := ControlData;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetControlData" Id="{6cd0ea59-5eb7-0f12-3fa4-6694f7d21e91}">
+      <Declaration><![CDATA[METHOD INTERNAL GetControlData : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pControlData <= 0 THEN RETURN; END_IF
+
+(* PO1 Control Word *)
+F_Memcpy(ADR(stControl), pControlData, 2, stConfig.bSwapProcessData);
+(* PO2 Setpoint Speed *)
+F_Memcpy(ADR(stControl) + 2, pControlData + 2, 2, stConfig.bSwapProcessData);
+(* PO3 Setpoint Acceleration *)
+F_Memcpy(ADR(stControl) + 4, pControlData + 4, 2, stConfig.bSwapProcessData);
+(* PO4 Setpoint Deceleration *)
+F_Memcpy(ADR(stControl) + 6, pControlData + 6, 2, stConfig.bSwapProcessData);
+(* PO5 Digital Outputs *)
+F_Memcpy(ADR(stControl) + 8, pControlData + 8, 2, stConfig.bSwapProcessData);
+(* PO6 Target Application Mode *)
+F_Memcpy(ADR(stControl) + 10, pControlData + 10, 2, stConfig.bSwapProcessData);
+(* PO7,PO8 Target Position *)
+F_Memcpy(ADR(stControl) + 12, pControlData + 12, 4, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InitRun" Id="{73b0e7b7-7b85-0d2c-3c02-c99f57409ba6}">
+      <Declaration><![CDATA[METHOD INTERNAL InitRun
+VAR_INST
+	bInitRun : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT bInitRun THEN RETURN; END_IF
+bInitRun := FALSE;
+
+IF pControlData = 0 OR pStatusData = 0 THEN
+	ADSLOGSTR(ADSLOG_MSGTYPE_WARN, CONCAT(sPath, ': %s'), 'Plc address not set.');
+END_IF
+
+pMovisafe := stConfig.pMovisafeCSSx1a;
+fbBasicDrive.fPosition := stConfig.fInitPosition;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Operation" Id="{4fbf8262-6b10-0426-023e-43d6906a03a6}">
+      <Declaration><![CDATA[METHOD INTERNAL Operation
+VAR_INST
+	fTargetPos			: REAL;
+	fSetpointVel		: REAL;
+	fSetpointAcc		: REAL;
+	fSetpointDec		: REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* Copy setpoint values *)
+fTargetPos 		:= DINT_TO_REAL(stControl.nTargetPosition);
+fSetpointVel 	:= stControl.nSetpointSpeed * stConfig.fRatioVelocity; 
+fSetpointAcc 	:= stControl.nSetpointAcceleration * stConfig.fRatioAccDec;
+fSetpointDec 	:= stControl.nSetpointDeceleration * stConfig.fRatioAccDec;
+
+(* Operation statemachine *)
+CASE stStatus.nActualApplicationMode OF	
+	E_MoviCPositionOperationMode.Jog:
+		IF stControl.b4_JoggingCW AND NOT stControl.b5_JoggingCCW THEN
+			fbBasicDrive.MoveAbsolute(DINT_TO_REAL(stConfig.nSoftwareLimitMax), fSetpointVel, fSetpointAcc, fSetpointDec);
+		ELSIF stControl.b5_JoggingCCW AND NOT stControl.b4_JoggingCW THEN
+			fbBasicDrive.MoveAbsolute(DINT_TO_REAL(stConfig.nSoftwareLimitMin), fSetpointVel, fSetpointAcc, fSetpointDec);
+		ELSE
+			fbBasicDrive.Stop(fSetpointDec);
+		END_IF
+		
+	E_MoviCPositionOperationMode.JogNoEnc:			
+		IF stControl.b4_JoggingCW AND NOT stControl.b5_JoggingCCW THEN
+			fbBasicDrive.MoveVelocity(fSetpointVel, fSetpointAcc, fSetpointDec);
+		ELSIF stControl.b5_JoggingCCW AND NOT stControl.b4_JoggingCW THEN
+			fbBasicDrive.MoveVelocity(-fSetpointVel, fSetpointAcc, fSetpointDec);
+		ELSE
+			fbBasicDrive.Stop(fSetpointDec);
+		END_IF
+		
+	E_MoviCPositionOperationMode.SpeedControl:
+		fbBasicDrive.MoveVelocity(fSetpointVel, fSetpointAcc, fSetpointDec);
+	
+	E_MoviCPositionOperationMode.ReferenceParam:
+		//not yet implemented
+		
+	E_MoviCPositionOperationMode.ReferenceBus:
+		//not yet implemented
+	
+	E_MoviCPositionOperationMode.PositionAbs, E_MoviCPositionOperationMode.EnergyOptimized, E_MoviCPositionOperationMode.MechanicsOptimized:
+		IF stControl.b7_StartStop THEN						
+			fbBasicDrive.MoveAbsolute(fTargetPos, fSetpointVel, fSetpointAcc, fSetpointDec);
+		ELSE
+			fbBasicDrive.Stop(fSetpointDec);
+		END_IF
+	
+	E_MoviCPositionOperationMode.PositionRel:
+		//not yet implemented
+		
+	E_MoviCPositionOperationMode.PositionModPos:
+		//not yet implemented
+		
+	E_MoviCPositionOperationMode.PositionModNeg:
+		//not yet implemented
+		
+	E_MoviCPositionOperationMode.PositionModShort:
+		//not yet implemented
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Safety" Id="{7d481910-f15f-0b1f-01e7-e52bb57d6ca3}">
+      <Declaration><![CDATA[METHOD INTERNAL Safety
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* Check if Movisafe is available *)
+IF pMovisafe = 0 THEN
+	bSTO := TRUE;
+	RETURN;
+END_IF
+
+(* Safe stop (STO) *)
+bSTO := pMovisafe^.stControl.bSTO;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetStatusData" Id="{63305277-7312-0ac1-0521-c7400a01ac7f}">
+      <Declaration><![CDATA[METHOD INTERNAL SetStatusData]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pStatusData <= 0 THEN RETURN; END_IF
+
+(* PI1 Status Word *)
+F_Memcpy(pStatusData, ADR(stStatus), 2, stConfig.bSwapProcessData);
+(* PI2 Actual Speed *)
+F_Memcpy(pStatusData + 2, ADR(stStatus) + 2, 2, stConfig.bSwapProcessData);
+(* PI3 Actual Status *)
+F_Memcpy(pStatusData + 4, ADR(stStatus) + 4, 2, stConfig.bSwapProcessData);
+(* PI4 Actual Torque *)
+F_Memcpy(pStatusData + 6, ADR(stStatus) + 6, 2, stConfig.bSwapProcessData);
+(* PI5 Digital Inputs *)
+F_Memcpy(pStatusData + 8, ADR(stStatus) + 8, 2, stConfig.bSwapProcessData);
+(* PI6 Actual Application Mode *)
+F_Memcpy(pStatusData + 10, ADR(stStatus) + 10, 2, stConfig.bSwapProcessData);
+(* PI7,PI8 Actual Position *)
+F_Memcpy(pStatusData + 12, ADR(stStatus) + 12, 4, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -69,33 +69,40 @@
     </PlaceholderReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Common\ProfidriveBaseState" />
+    <Folder Include="Common\ProfidriveGSM" />
+    <Folder Include="Common\Utils" />
     <Folder Include="Common\ProfidriveParamInterpreter" />
     <Folder Include="Devices" />
-    <Folder Include="Devices\Communication\RcvDp" />
-    <Folder Include="Devices\Communication\SendDp" />
-    <Folder Include="Devices\Drives" />
-    <Folder Include="Devices\Drives\Danfoss_VLT_MCA_120">
-      <ExcludeFromBuild>true</ExcludeFromBuild>
-    </Folder>
-    <Folder Include="Devices\Drives\MoviCPosition" />
-    <Folder Include="Devices\Drives\MoviCVelocity" />
-    <Folder Include="Devices\Drives\MovisafeCSSx1a" />
-    <Folder Include="Devices\Drives\MovisafeCSBx1a" />
-    <Folder Include="Devices\Drives\ProfidriveGSM" />
-    <Folder Include="Devices\Drives\ProfidriveCu">
-      <ExcludeFromBuild>true</ExcludeFromBuild>
-    </Folder>
-    <Folder Include="Devices\Drives\ProfidriveTelegram1">
-      <ExcludeFromBuild>false</ExcludeFromBuild>
-    </Folder>
     <Folder Include="Common" />
-    <Folder Include="Devices\Communication" />
+    <Folder Include="Devices\Profidrive_Telegram1" />
+    <Folder Include="Devices\Siemens_RcvDp" />
+    <Folder Include="Devices\Siemens_SendDp" />
+    <Folder Include="Devices\SEW_MoviC_Position" />
+    <Folder Include="Devices\SEW_MoviC_Velocity" />
+    <Folder Include="Devices\SEW_Movisafe_CSSx1a" />
+    <Folder Include="_backlog">
+      <ExcludeFromBuild>true</ExcludeFromBuild>
+    </Folder>
     <Folder Include="Tests" />
-    <Folder Include="Tests\Drives" />
+    <Folder Include="Tests\Devices" />
+    <Folder Include="_backlog\Danfoss_VLT_MCA_120" />
+    <Folder Include="_backlog\ProfidriveCu" />
+    <Folder Include="_backlog\SEW_Movisafe_CSBx1a" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\ProfidriveParamInterpreter\E_ProfidriveParamFormat.TcDUT">
+    <Compile Include="Common\ProfidriveGSM\E_ProfidriveGSM_State.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\ProfidriveGSM\FB_ProfidriveGSM.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\ProfidriveGSM\ST_ProfidriveGSM_Control.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\ProfidriveGSM\ST_ProfidriveGSM_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\ProfidriveParamInterpreter\E_ProfidriveParam_Format.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Common\ProfidriveParamInterpreter\FB_ProfidriveParamInterpreter.TcPOU">
@@ -104,154 +111,145 @@
     <Compile Include="Common\ProfidriveParamInterpreter\ST_ProfidriveParam.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\ProfidriveParamInterpreter\ST_ProfidriveParamSet.TcDUT">
+    <Compile Include="Common\ProfidriveParamInterpreter\ST_ProfidriveParam_Set.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\F_CalcCrc16.TcPOU">
+    <Compile Include="Common\Utils\F_CalcCrc16.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\RcvDp\FB_RcvDp.TcPOU">
+    <Compile Include="Devices\I_SEW_Movisafe.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpConfig.TcDUT">
+    <Compile Include="Devices\Profidrive_Telegram1\FB_Profidrive_Telegram1.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpCtrl.TcDUT">
+    <Compile Include="Devices\Profidrive_Telegram1\ST_Profidrive_Telegram1_Config.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpDevData.TcDUT">
+    <Compile Include="Devices\Profidrive_Telegram1\ST_Profidrive_Telegram1_Control.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpHstData.TcDUT">
+    <Compile Include="Devices\Profidrive_Telegram1\ST_Profidrive_Telegram1_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\RcvDp\ST_RcvDpStatus.TcDUT">
+    <Compile Include="Devices\Siemens_RcvDp\FB_Siemens_RcvDp.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\SendDp\FB_SendDp.TcPOU">
+    <Compile Include="Devices\Siemens_RcvDp\ST_Siemens_RcvDp_Config.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\SendDp\ST_SendDpConfig.TcDUT">
+    <Compile Include="Devices\Siemens_RcvDp\ST_Siemens_RcvDp_Control.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\SendDp\ST_SendDpCtrl.TcDUT">
+    <Compile Include="Devices\Siemens_RcvDp\ST_Siemens_RcvDp_DevData.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\SendDp\ST_SendDpDevData.TcDUT">
+    <Compile Include="Devices\Siemens_RcvDp\ST_Siemens_RcvDp_HstData.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\SendDp\ST_SendDpHstData.TcDUT">
+    <Compile Include="Devices\Siemens_RcvDp\ST_Siemens_RcvDp_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Communication\SendDp\ST_SendDpStatus.TcDUT">
+    <Compile Include="Devices\Siemens_SendDp\FB_Siemens_SendDp.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\Danfoss_VLT_MCA_120\FB_Danfoss_VLT_MCA_120.TcPOU">
+    <Compile Include="Devices\Siemens_SendDp\ST_Siemens_SendDp_Config.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\Danfoss_VLT_MCA_120\ST_Danfoss_VLT_MCA_120_Config.TcDUT">
+    <Compile Include="Devices\Siemens_SendDp\ST_Siemens_SendDp_Control.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\Danfoss_VLT_MCA_120\ST_Danfoss_VLT_MCA_120_Control.TcDUT">
+    <Compile Include="Devices\Siemens_SendDp\ST_Siemens_SendDp_DevData.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\Danfoss_VLT_MCA_120\ST_Danfoss_VLT_MCA_120_Status.TcDUT">
+    <Compile Include="Devices\Siemens_SendDp\ST_Siemens_SendDp_HstData.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCPosition\E_MoviCPositionOperationMode.TcDUT">
+    <Compile Include="Devices\Siemens_SendDp\ST_Siemens_SendDp_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCPosition\FB_MoviCPosition.TcPOU">
+    <Compile Include="Devices\SEW_MoviC_Position\E_SEW_MoviC_Position_OperationMode.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCPosition\ST_MoviCPosition_Control.TcDUT">
+    <Compile Include="Devices\SEW_MoviC_Position\FB_SEW_MoviC_Position.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCPosition\ST_MoviCPosition_Status.TcDUT">
+    <Compile Include="Devices\SEW_MoviC_Position\ST_SEW_MoviC_Position_Config.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCPosition\ST_MoviCPosition_Config.TcDUT">
+    <Compile Include="Devices\SEW_MoviC_Position\ST_SEW_MoviC_Position_Control.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCVelocity\FB_MoviCVelocity.TcPOU">
+    <Compile Include="Devices\SEW_MoviC_Position\ST_SEW_MoviC_Position_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCVelocity\ST_MoviCVelocity_Config.TcDUT">
+    <Compile Include="Devices\SEW_MoviC_Velocity\FB_SEW_MoviC_Velocity.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCVelocity\ST_MoviCVelocity_Control.TcDUT">
+    <Compile Include="Devices\SEW_MoviC_Velocity\ST_SEW_MoviC_Velocity_Config.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MoviCVelocity\ST_MoviCVelocity_Status.TcDUT">
+    <Compile Include="Devices\SEW_MoviC_Velocity\ST_SEW_MoviC_Velocity_Control.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSBx1a\ST_MovisafeCSBx1a_Config.TcDUT">
+    <Compile Include="Devices\SEW_MoviC_Velocity\ST_SEW_MoviC_Velocity_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSSx1a\FB_MovisafeCSSx1a.TcPOU">
+    <Compile Include="Devices\SEW_Movisafe_CSSx1a\FB_SEW_Movisafe_CSSx1a.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSSx1a\ST_MovisafeCSSx1a_Config.TcDUT">
+    <Compile Include="Devices\SEW_Movisafe_CSSx1a\ST_SEW_Movisafe_CSSx1a_Config.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSSx1a\ST_MovisafeCSSx1a_Control.TcDUT">
+    <Compile Include="Devices\SEW_Movisafe_CSSx1a\ST_SEW_Movisafe_CSSx1a_Control.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSSx1a\ST_MovisafeCSSx1a_Status.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSBx1a\FB_MovisafeCSBx1a.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSBx1a\ST_MovisafeCSBx1a_Control.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\MovisafeCSBx1a\ST_MovisafeCSBx1a_Status.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveGSM\E_ProfidriveGSM_State.TcTLEO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveGSM\FB_ProfidriveGSM.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveGSM\ST_ProfiidriveGSM_STW1.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveGSM\ST_ProfiidriveGSM_ZSW1.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveCu\FB_ProfidriveCu.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveCu\I_Sinamics.TcIO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveCu\ST_ProfidriveCuConfig.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTelegram1\FB_ProfidriveTelegram1.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTelegram1\ST_ProfidriveTelegram1_Config.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTelegram1\ST_ProfidriveTelegram1_Control.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Devices\Drives\ProfidriveTelegram1\ST_ProfidriveTelegram1_Status.TcDUT">
+    <Compile Include="Devices\SEW_Movisafe_CSSx1a\ST_SEW_Movisafe_CSSx1a_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tests\Drives\FB_ProfidriveGSM_Test.TcPOU">
+    <Compile Include="Tests\Devices\FB_ProfidriveGSM_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tests\Drives\FB_ProfidriveTelegram1_Test.TcPOU">
+    <Compile Include="Tests\Devices\FB_ProfidriveTelegram1_Test.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\PRG_TEST.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\Danfoss_VLT_MCA_120\FB_Danfoss_VLT_MCA_120.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\Danfoss_VLT_MCA_120\ST_Danfoss_VLT_MCA_120_Config.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\Danfoss_VLT_MCA_120\ST_Danfoss_VLT_MCA_120_Control.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\Danfoss_VLT_MCA_120\ST_Danfoss_VLT_MCA_120_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\ProfidriveCu\FB_ProfidriveCu.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\ProfidriveCu\I_Sinamics.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\ProfidriveCu\ST_ProfidriveCuConfig.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\SEW_Movisafe_CSBx1a\FB_SEW_Movisafe_CSBx1a.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\SEW_Movisafe_CSBx1a\ST_SEW_Movisafe_CSBx1a_Config.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\SEW_Movisafe_CSBx1a\ST_SEW_Movisafe_CSBx1a_Control.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_backlog\SEW_Movisafe_CSBx1a\ST_SEW_Movisafe_CSBx1a_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -263,8 +261,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -446,16 +444,16 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="ExactVersionConstraintToSave">{f9079115-a4ba-4f30-bf7c-9e76613146fc}</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="Int32">System.Int32</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="ExactVersionConstraintToSave">{f9079115-a4ba-4f30-bf7c-9e76613146fc}</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="Int32">System.Int32</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

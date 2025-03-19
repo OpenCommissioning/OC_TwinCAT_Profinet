@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_SEW_Movisafe_CSSx1a" Id="{7565ddd7-37ad-0488-3a68-3356beaae807}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+FB_SEW_Movisafe_CSSx1a simulates the funcitionalty of a SEW‑EURODRIVE MOVISAFE® module.
+
+Disclaimer: This simulation is an independent project and is not affiliated with, endorsed by, or approved by SEW‑EURODRIVE. All rights to the SEW‑EURODRIVE brand name and trademarks remain the property of the manufacturer.
+Furthermore, no guarantee is given for the completeness of the functional scope or the error-free operation of the simulation. Users should be aware that deviations from the actual product may occur.
+*)
+
+{attribute 'reflection'}
+FUNCTION_BLOCK FB_SEW_Movisafe_CSSx1a EXTENDS FB_Base IMPLEMENTS I_SEW_Movisafe
+VAR_INPUT
+	pControl 			: PVOID; //Pocess data from fieldbus. Size must be >= stControl.
+	pStatus 			: PVOID; //Pocess data to fieldbus. Size must be >= stStatus.
+	stControl 			: ST_SEW_Movisafe_CSSx1a_Control; //Control structure. Is read from the fieldbus.
+	stConfig 			: ST_SEW_Movisafe_CSSx1a_Config; //Config structure. Contains parameters of the device.
+	
+	bASFDiag			: BOOL; //At least one drive safety function has exceeded a limit
+	bSBTActive 			: BOOL; //Brake test is active
+	bF_DI0				: BOOL; //State digital input 1
+	bF_DI1				: BOOL; //State digital input 2
+	bF_DI2				: BOOL; //State digital input 3
+	bF_DI3				: BOOL; //State digital input 4
+	bSSM1				: BOOL; //SSM 1 ist activated (Safe speed monitoring)
+	bSSM2				: BOOL; //SSM 2 ist activated (Safe speed monitoring)
+	bSSM3				: BOOL;	//SSM 3 ist activated (Safe speed monitoring)
+	bSSM4				: BOOL; //SSM 4 ist activated (Safe speed monitoring)
+END_VAR
+
+VAR_OUTPUT	
+	stStatus			: ST_SEW_Movisafe_CSSx1a_Status;
+END_VAR
+
+VAR
+    {attribute 'instance-path'} 
+    {attribute 'noinit'} 
+    _sPath 				: STRING; 
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+InitRun();
+
+GetControlData();
+Cycle();
+SetStatusData();]]></ST>
+    </Implementation>
+    <Property Name="bSTO" Id="{b7925ad5-eee5-008e-3deb-b4ab03d2555d}">
+      <Declaration><![CDATA[PROPERTY bSTO : BOOL]]></Declaration>
+      <Get Name="Get" Id="{321dc102-b770-0608-0ff6-3be22fc47b1e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bSTO := stStatus.b0_0_StoActive;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Cycle" Id="{42ef2a2a-27a6-0c21-2c83-d640f49d6cb3}">
+      <Declaration><![CDATA[METHOD INTERNAL Cycle : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stStatus.b0_0_STOActive			:= stControl.b0_0_STO;
+stStatus.b0_1_ASFDiag			:= bASFDiag;
+stStatus.b0_2_SBTActive			:= bSBTActive;
+stStatus.b0_3_InputDataValid	:= TRUE;
+stStatus.b0_4_MutingEncErr		:= stControl.b0_4_MutingEncErr;
+stStatus.b0_5_TestModeActive	:= stControl.b0_5_TestModeActice;
+stStatus.b0_6_Warning			:= FALSE;
+stStatus.b0_7_ErrorState		:= FALSE;
+stStatus.b1_0_F_DI0				:= bF_DI0;
+stStatus.b1_1_F_DI1				:= bF_DI1;
+stStatus.b1_2_F_DI2				:= bF_DI2;
+stStatus.b1_3_F_DI3				:= bF_DI3;
+stStatus.b1_4_Reserved			:= FALSE;
+stStatus.b1_5_Reserved			:= FALSE;
+stStatus.b1_6_Reserved			:= FALSE;
+stStatus.b1_7_Reserved			:= FALSE;
+stStatus.b2_0_SOS1				:= NOT stControl.b2_0_SOS1;
+stStatus.b2_1_Reserved			:= FALSE;
+stStatus.b2_2_SSx1				:= NOT stControl.b2_2_SSx1;
+stStatus.b2_3_SSx2				:= NOT stControl.b2_3_SSx2;
+stStatus.b2_4_SDI1				:= NOT stControl.b2_4_SDI1;
+stStatus.b2_5_SDI2				:= NOT stControl.b2_5_SDI2;
+stStatus.b2_6_SLI1				:= NOT stControl.b2_6_SLI1;
+stStatus.b2_7_SLI2				:= NOT stControl.b2_7_SLI2;
+stStatus.b3_0_SLS1				:= NOT stControl.b3_0_SLS1;
+stStatus.b3_1_SLS2				:= NOT stControl.b3_1_SLS2;
+stStatus.b3_2_SLS3				:= NOT stControl.b3_2_SLS3;
+stStatus.b3_3_SLS4				:= NOT stControl.b3_3_SLS4;
+stStatus.b3_4_SSR1				:= NOT stControl.b3_4_SSR1;
+stStatus.b3_5_SSR2				:= NOT stControl.b3_5_SSR2;
+stStatus.b3_6_Reserved			:= FALSE;
+stStatus.b3_7_Reserved			:= FALSE;
+stStatus.b4_0_SLA1				:= NOT stControl.b4_0_SLA1;
+stStatus.b4_1_SLA2				:= NOT stControl.b4_1_SLA2;
+stStatus.b4_2_SSM1				:= bSSM1;
+stStatus.b4_3_SSM2				:= bSSM2;
+stStatus.b4_4_SSM3				:= bSSM3;
+stStatus.b4_5_SSM4				:= bSSM4;
+stStatus.b4_6_Reserved			:= FALSE;
+stStatus.b4_7_Reserved			:= FALSE;
+stStatus.b5_0_Reserved			:= FALSE;
+stStatus.b5_1_Reserved			:= FALSE;
+stStatus.b5_2_Reserved			:= FALSE;
+stStatus.b5_3_Reserved			:= FALSE;
+stStatus.b5_4_Reserved			:= FALSE;
+stStatus.b5_5_Reserved			:= FALSE;
+stStatus.b5_6_Reserved			:= FALSE;
+stStatus.b5_7_Reserved			:= FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetControlData" Id="{ac71516f-d4a7-0215-0398-c813451a63fc}">
+      <Declaration><![CDATA[METHOD INTERNAL GetControlData
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pControl <= 0 OR stConfig.bForceMode THEN RETURN; END_IF
+
+F_MEMCPY(ADR(stControl), pControl, 5, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="InitRun" Id="{d84d5bb7-6c1a-03bc-1f3d-2dc7b3c11e09}">
+      <Declaration><![CDATA[METHOD INTERNAL InitRun
+VAR_INST
+	bInitRun : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT bInitRun THEN RETURN; END_IF
+bInitRun := FALSE;
+
+IF pControl = 0 OR pStatus = 0 THEN
+	ADSLOGSTR(ADSLOG_MSGTYPE_WARN, CONCAT(_sPath, ': %s'), 'Plc address not set.');
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetStatusData" Id="{2dd9972d-82f4-0b7f-2066-8fe9f58df912}">
+      <Declaration><![CDATA[METHOD INTERNAL SetStatusData
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF pStatus <= 0 THEN RETURN; END_IF
+
+F_MEMCPY(pStatus, ADR(stStatus), 6, stConfig.bSwapProcessData);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a">
+      <LineId Id="134" Count="4" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a.bSTO.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a.Cycle">
+      <LineId Id="2967" Count="46" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a.GetControlData">
+      <LineId Id="3" Count="1" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a.InitRun">
+      <LineId Id="3" Count="4" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a.SetStatusData">
+      <LineId Id="3" Count="1" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

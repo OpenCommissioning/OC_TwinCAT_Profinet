@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SEW_MoviC_Velocity_Control" Id="{78cf8c5c-f1c7-09c6-3ff6-5e330bbca07c}">
+    <Declaration><![CDATA[TYPE ST_SEW_MoviC_Velocity_Control :
+STRUCT
+    b0_EnableEStop 					: BIT;	//0  1 = enable, 0 = emergency stop
+    b1_EnableBusStop 				: BIT;	//1  1 = enable, 0 = stop at application limits
+    b2_Reserved2 					: BIT;	//2
+    b3_ReleaseBrake 				: BIT;	//3  only needed if function is activated
+    b4_JoggingCW 					: BIT;	//4  jog positive
+    b5_JoggingCCW 					: BIT;	//5  jog negative
+    b6_AcceptRelativePosition 		: BIT;	//6  apply relative target pos only in relative pos mode
+    b7_StartStop 					: BIT;	//7  1 = start movement in all modes except jog, 0 = deceleration to speed 0
+    b8_ErrorReset 					: BIT;	//8  reset fault messages
+    b9_Reserved9 					: BIT;	//9
+    b10_ActivateDriveTrain2 		: BIT;	//10  0 = drive train 1 selected, 1 = drive train 2 selected
+    b11_Reserved11 					: BIT;	//11
+    b12_DisableSoftwareLimits 		: BIT;	//12  0 = software limit activated, 1 = software limit deactivated
+    b13_ActivateInhibit 			: BIT;	//13  1 = output stage inhibit activated -> motor coasts to halt or brake is applied, 0 = output stage can be enabled
+    b14_ActivateStandByMode 		: BIT;	//14  1 = activated, can only be activated when output stage is inhibited (bActivateInhibit = 1)
+    b15_MovikitHeartbeat 			: BIT;	//15  Heartbeat trigger
+	nSetpointSpeed					: INT;	//16..31 
+	nSetpointAcceleration			: INT;	//32..47
+	nSetpointDeceleration			: INT;	//48..63
+	nDigitalOutputs					: WORD;	//64..79	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

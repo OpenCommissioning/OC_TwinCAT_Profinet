@@ -149,7 +149,18 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pControl <= 0 OR stConfig.bForceMode THEN RETURN; END_IF
 
-F_Memcpy(ADR(stControl), pControl, SIZEOF(stControl), stConfig.bSwapProcessData);]]></ST>
+// nRcvBoolData
+F_Memcpy(ADR(stControl), pControl, 2, stConfig.bSwapProcessData);
+// nRcvInt00
+F_Memcpy(ADR(stControl) + 2, pControl + 2, 2, stConfig.bSwapProcessData);		
+// nRcvInt01
+F_Memcpy(ADR(stControl) + 4, pControl + 4, 2, stConfig.bSwapProcessData);			
+// nRcvData
+F_Memcpy(ADR(stControl) + 6, pControl + 6, 2, stConfig.bSwapProcessData);			
+// nRcvSequenceNumber
+F_Memcpy(ADR(stControl) + 8, pControl + 8, 2, stConfig.bSwapProcessData);	
+// nRcvCrc
+F_Memcpy(ADR(stControl) + 10, pControl + 10, 2, stConfig.bSwapProcessData);]]></ST>
       </Implementation>
     </Method>
     <Method Name="InitRun" Id="{dd6e8811-45d7-018e-063a-45d0829d7ec0}">
@@ -178,7 +189,13 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pStatus <= 0 THEN RETURN; END_IF
 
-F_Memcpy(pStatus, ADR(stStatus), SIZEOF(stStatus), stConfig.bSwapProcessData);]]></ST>
+
+// nSendData
+F_Memcpy(pStatus, ADR(stStatus), 2, stConfig.bSwapProcessData);				
+// nSendSequenceNumber
+F_Memcpy(pStatus + 2, ADR(stStatus) + 2, 2, stConfig.bSwapProcessData);
+// nSendCrc
+F_Memcpy(pStatus + 4, ADR(stStatus) + 4, 2, stConfig.bSwapProcessData);]]></ST>
       </Implementation>
     </Method>
     <Method Name="SimLogic" Id="{1387c38b-ddea-0e1b-3330-b31f43bbd6c5}">
@@ -227,7 +244,18 @@ END_VAR
     </LineIds>
     <LineIds Name="FB_Siemens_RcvDp.GetControlData">
       <LineId Id="5" Count="0" />
-      <LineId Id="17" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="23" Count="1" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="37" Count="0" />
     </LineIds>
     <LineIds Name="FB_Siemens_RcvDp.InitRun">
       <LineId Id="3" Count="7" />
@@ -235,7 +263,12 @@ END_VAR
     </LineIds>
     <LineIds Name="FB_Siemens_RcvDp.SetStatusData">
       <LineId Id="5" Count="0" />
-      <LineId Id="16" Count="1" />
+      <LineId Id="21" Count="2" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="27" Count="0" />
     </LineIds>
     <LineIds Name="FB_Siemens_RcvDp.SimLogic">
       <LineId Id="3" Count="26" />

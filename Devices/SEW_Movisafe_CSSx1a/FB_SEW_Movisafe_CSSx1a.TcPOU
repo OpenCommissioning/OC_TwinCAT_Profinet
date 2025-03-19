@@ -121,7 +121,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pControl <= 0 OR stConfig.bForceMode THEN RETURN; END_IF
 
-F_MEMCPY(ADR(stControl), pControl, 5, stConfig.bSwapProcessData);]]></ST>
+F_MEMCPY(ADR(stControl), pControl, SIZEOF(stControl), stConfig.bSwapProcessData);]]></ST>
       </Implementation>
     </Method>
     <Method Name="InitRun" Id="{d84d5bb7-6c1a-03bc-1f3d-2dc7b3c11e09}">
@@ -147,7 +147,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pStatus <= 0 THEN RETURN; END_IF
 
-F_MEMCPY(pStatus, ADR(stStatus), 6, stConfig.bSwapProcessData);]]></ST>
+F_MEMCPY(pStatus, ADR(stStatus), SIZEOF(stStatus), stConfig.bSwapProcessData);]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="FB_SEW_Movisafe_CSSx1a">

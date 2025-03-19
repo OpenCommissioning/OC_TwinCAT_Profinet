@@ -129,7 +129,12 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pControl <= 0 OR stConfig.bForceMode THEN RETURN; END_IF
 
-F_Memcpy(ADR(stControl), pControl, SIZEOF(stControl), stConfig.bSwapProcessData);]]></ST>
+// nRcvData
+F_Memcpy(ADR(stControl), pControl, 2, stConfig.bSwapProcessData);
+// nRcvSequenceNumber
+F_Memcpy(ADR(stControl) + 2, pControl + 2, 2, stConfig.bSwapProcessData);
+// nRcvCrc
+F_Memcpy(ADR(stControl) + 4, pControl + 4, 2, stConfig.bSwapProcessData);]]></ST>
       </Implementation>
     </Method>
     <Method Name="InitRun" Id="{55d39e89-0493-012b-2175-48d3a2f07d40}">
@@ -157,7 +162,18 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pStatus <= 0 THEN RETURN; END_IF
 
-F_Memcpy(pStatus, ADR(stStatus), SIZEOF(stStatus), stConfig.bSwapProcessData);]]></ST>
+// nSendBoolData
+F_Memcpy(pStatus, ADR(stStatus), 2, stConfig.bSwapProcessData);
+// nSendInt00
+F_Memcpy(pStatus + 2, ADR(stStatus) + 2, 2, stConfig.bSwapProcessData);		
+// nSendInt01
+F_Memcpy(pStatus + 4, ADR(stStatus) + 4, 2, stConfig.bSwapProcessData);		
+// nSendData
+F_Memcpy(pStatus + 6, ADR(stStatus) + 6, 2, stConfig.bSwapProcessData);	
+// nSendSequenceNumber
+F_Memcpy(pStatus + 8, ADR(stStatus) + 8, 2, stConfig.bSwapProcessData);
+// nSendCrc
+F_Memcpy(pStatus + 10, ADR(stStatus) + 10, 2, stConfig.bSwapProcessData);		]]></ST>
       </Implementation>
     </Method>
     <Method Name="SimLogic" Id="{6e002099-19d4-0d6c-2189-7b88c9b44daf}">
@@ -203,8 +219,13 @@ END_VAR
     </LineIds>
     <LineIds Name="FB_Siemens_SendDp.GetControlData">
       <LineId Id="5" Count="0" />
+      <LineId Id="19" Count="0" />
       <LineId Id="15" Count="0" />
+      <LineId Id="21" Count="0" />
       <LineId Id="12" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="23" Count="0" />
     </LineIds>
     <LineIds Name="FB_Siemens_SendDp.InitRun">
       <LineId Id="3" Count="6" />
@@ -212,8 +233,18 @@ END_VAR
     </LineIds>
     <LineIds Name="FB_Siemens_SendDp.SetStatusData">
       <LineId Id="5" Count="0" />
+      <LineId Id="29" Count="1" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="39" Count="0" />
       <LineId Id="25" Count="0" />
-      <LineId Id="24" Count="0" />
+      <LineId Id="40" Count="0" />
     </LineIds>
     <LineIds Name="FB_Siemens_SendDp.SimLogic">
       <LineId Id="3" Count="24" />

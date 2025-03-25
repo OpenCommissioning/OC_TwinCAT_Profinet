@@ -80,6 +80,7 @@
     <Folder Include="Devices\SEW_MoviC_Position" />
     <Folder Include="Devices\SEW_MoviC_Velocity" />
     <Folder Include="Devices\SEW_Movisafe_CSSx1a" />
+    <Folder Include="Tests\Helpers" />
     <Folder Include="_backlog">
       <ExcludeFromBuild>true</ExcludeFromBuild>
     </Folder>
@@ -214,6 +215,24 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\Devices\FB_ProfidriveTelegram1_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Devices\FB_SEW_MoviC_Position_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Devices\FB_SEW_MoviC_Velocity_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Devices\FB_Siemens_RcvDp_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Devices\FB_SEW_Movisafe_CSSx1a_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Devices\FB_Siemens_SendDp_Test.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Helpers\FB_SEW_Movisafe.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\PRG_TEST.TcPOU">

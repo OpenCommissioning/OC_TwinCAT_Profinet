@@ -5,10 +5,22 @@
 VAR
 	FB_ProfidriveGSM_Test : FB_ProfidriveGSM_Test;
 	FB_ProfidriveTelegram1_Test : FB_ProfidriveTelegram1_Test;
+	FB_SEW_MoviC_Position_Test :FB_SEW_MoviC_Position_Test;
+	FB_SEW_MoviC_Velocity_Test : FB_SEW_MoviC_Velocity_Test;
+	FB_SEW_Movisafe_CSSx1a_Test : FB_SEW_Movisafe_CSSx1a_Test;
+	FB_Siemens_RcvDp_Test : FB_Siemens_RcvDp_Test;
+	FB_Siemens_SendDp_Test : FB_Siemens_SendDp_Test;
+	
+	fbSystem : FB_System;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[TcUnit.RUN();]]></ST>
+      <ST><![CDATA[fbSystem();
+TcUnit.RUN();]]></ST>
     </Implementation>
+    <LineIds Name="PRG_TEST">
+      <LineId Id="16" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
   </POU>
 </TcPlcObject>

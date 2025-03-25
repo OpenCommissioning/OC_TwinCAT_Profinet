@@ -1,0 +1,840 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_SEW_MoviC_Velocity_Test" Id="{3a361312-2bf0-0275-1904-5d7169890778}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SEW_MoviC_Velocity_Test EXTENDS TcUnit.FB_TestSuite
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Test_ProcessDataControl();
+Test_ProcessDataStatus();
+Test_Safety();
+Test_Cycle_Status_Const_Mirror();
+Test_Cycle_Status_Movement('Test Movement 0',0,1,FALSE,FALSE );
+Test_Cycle_Status_Movement('Test Movement 1000, Gear 1',1000,1,TRUE,TRUE );
+Test_Cycle_Status_Movement('Test Movement -5000, Gear 1',-5000,1,TRUE,TRUE );
+Test_Cycle_Status_Movement('Test Movement 1000, Gear 5',1000,5,TRUE,TRUE );
+Test_Cycle_Status_Movement('Test Movement 1000, Gear -0,5',1000,-0.5,TRUE,TRUE );]]></ST>
+    </Implementation>
+    <Method Name="Test_Cycle_Status_Const_Mirror" Id="{119e0539-ffbb-04ad-1bcd-054f1515a5ad}">
+      <Declaration><![CDATA[METHOD Test_Cycle_Status_Const_Mirror : REFERENCE TO FB_Test
+VAR
+	fbDrive 			: FB_SEW_MoviC_Velocity;
+	bExpected			: BOOL;
+	nIntExpected		: INT;
+	nWordExpected		: WORD;
+	stExpected			: ST_SEW_MoviC_Velocity_Status;
+	bResult 			: BOOL;	
+	nIntResult 			: INT;	
+	nWordResult 		: WORD;	
+	stResult			: ST_SEW_MoviC_Velocity_Status;
+	
+	stSetControl		: ST_SEW_MoviC_Velocity_Control;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Status CONST TRUE');
+
+bExpected := TRUE;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b0_InverterReady);
+
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'InverterReady not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b5_DriveReferenced);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'DriveReferenced not set correctly');
+			 
+bResult := BIT_TO_BOOL(stResult.b2_PowerStageOn);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'PowerStageOn not set correctly');
+	 
+TEST_FINISHED();
+
+TEST('Status CONST FALSE');
+
+bExpected := FALSE;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b6_SetpointsActive);
+
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'SetpointsActive not set correctly');
+			 
+bResult := BIT_TO_BOOL(stResult.b7_TargetpositionReached);
+
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'TargetpositionReached not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b8_ErrorActive);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'ErrorActive not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b9_WarningActive);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'WarningActive not set correctly');
+	 
+TEST_FINISHED();
+
+TEST('Status CONST 0');
+
+nWordExpected := 0;
+nIntExpected := 0;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+nWordResult := stResult.nActualStatus;
+
+AssertEquals(Expected := nWordExpected,
+             Actual := nWordResult,
+             Message := 'ActualStatus not set correctly');
+
+nIntResult := stResult.nActualTorque;
+			 
+AssertEquals(Expected := nIntExpected,
+             Actual := nIntResult,
+             Message := 'ActualTorque not set correctly');
+			 
+nWordResult := stResult.nDigitalInputs;
+
+AssertEquals(Expected := nWordExpected,
+             Actual := nWordResult,
+             Message := 'DigitalInputs not set correctly');
+	 
+TEST_FINISHED();
+
+
+TEST('Status Mirror Control FALSE');
+
+bExpected := FALSE;
+
+stSetControl.b13_ActivateInhibit := bExpected;
+stSetControl.b10_ActivateDriveTrain2 := bExpected;
+stSetControl.b12_DisableSoftwareLimits := bExpected;
+stSetControl.b14_ActivateStandByMode := bExpected;
+stSetControl.b15_MovikitHeartbeat := bExpected;
+
+fbDrive.stControl := stSetControl;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b10_DriveTrain2Active);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'riveTrain2Active not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b12_SoftwareLimitsDisabled);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'SoftwareLimitsDisabled not set correctly');
+			 
+ bResult := BIT_TO_BOOL(stResult.b14_StandByModeActive);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'StandByModeActive not set correctly');
+			 
+bResult := BIT_TO_BOOL(stResult.b15_MovikitHeartbeat);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'MovikitHeartbeat not set correctly');
+	 
+TEST_FINISHED();
+
+TEST('Status Mirror Control TRUE');
+
+bExpected := TRUE;
+
+stSetControl.b13_ActivateInhibit := bExpected;
+stSetControl.b10_ActivateDriveTrain2 := bExpected;
+stSetControl.b12_DisableSoftwareLimits := bExpected;
+stSetControl.b14_ActivateStandByMode := bExpected;
+stSetControl.b15_MovikitHeartbeat := bExpected;
+
+fbDrive.stControl := stSetControl;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b10_DriveTrain2Active);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'DriveTrain2Active not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b12_SoftwareLimitsDisabled);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'SoftwareLimitsDisabled not set correctly');
+			 
+ bResult := BIT_TO_BOOL(stResult.b14_StandByModeActive);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'StandByModeActive not set correctly');
+			 
+bResult := BIT_TO_BOOL(stResult.b15_MovikitHeartbeat);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'MovikitHeartbeat not set correctly');
+	 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Test_Cycle_Status_Movement" Id="{d458fed7-726f-0162-1ee2-d0d50ec87f72}">
+      <Declaration><![CDATA[METHOD Test_Cycle_Status_Movement : REFERENCE TO FB_Test
+VAR_INPUT
+	sName 								: T_MaxString;
+	nVelcity							: INT;
+	fRatioVelcity						: REAL;
+	bExpected_b4_MotorTurning 			: BOOL;
+	bExpected_b11_SpeedSetpointReached 	: BOOL;
+END_VAR
+VAR
+	nCycle		: INT;
+	fbDrive 	: FB_SEW_MoviC_Velocity;
+	bResult		: BOOL;	
+	nResult 	: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST(sName);
+
+// Start Conditions
+fbDrive.stControl.b0_EnableEStop := TRUE;
+fbDrive.stControl.b1_EnableBusStop := TRUE;
+fbDrive.stControl.b7_StartStop := TRUE;
+fbDrive.stControl.b13_ActivateInhibit := FALSE;
+fbDrive.bSTO := TRUE;
+fbDrive.stControl.nSetpointSpeed := nVelcity;
+fbDrive.stControl.nSetpointAcceleration := 1000;
+fbDrive.stControl.nSetpointDeceleration := 1000;
+
+fbDrive.stConfig.fRatioPosition := fRatioVelcity;
+
+FOR nCycle := 1 TO 5500 DO
+	fbDrive.Cycle();
+END_FOR
+
+nResult := fbDrive.stStatus.nActualSpeed;
+
+AssertEquals(Expected := nVelcity,
+             Actual := nResult,
+             Message := 'ActualSpeed not set correctly');
+
+bResult := fbDrive.stStatus.b4_MotorTurning;
+
+AssertEquals(Expected := bExpected_b4_MotorTurning,
+             Actual := bResult,
+             Message := 'b4_MotorTurning not set correctly');
+
+
+bResult := fbDrive.stStatus.b11_SpeedSetpointReached;
+			 
+AssertEquals(Expected := bExpected_b11_SpeedSetpointReached,
+             Actual := bResult,
+             Message := 'b11_SpeedSetpointReached not set correctly');
+	 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Test_ProcessDataControl" Id="{5c5dba82-fe3c-08dd-2639-179972d62654}">
+      <Declaration><![CDATA[METHOD Test_ProcessDataControl : REFERENCE TO FB_Test
+VAR
+	fbDrive 						: FB_SEW_MoviC_Velocity;
+	
+	nExpectedCW						: WORD;
+	nExpectedSetpointSpeed			: INT;
+	nExpectedSetpointAcceleration	: INT;
+	nExpectedSetpointDeceleration	: INT;
+	nExpectedDigitalOutputs			: WORD;
+	
+	nActualCW						: WORD;
+	nActualSetpointSpeed			: INT;
+	nActualSetpointAcceleration		: INT;
+	nActualSetpointDeceleration		: INT;
+	nActualDigitalOutputs			: WORD;
+		
+	stExpectedControlData 			: ST_SEW_MoviC_Velocity_Control;		
+	stActualControlData				: ST_SEW_MoviC_Velocity_Control;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Process data to control structure');
+
+//Arrange
+nExpectedCW := 16#A1B2;					
+nExpectedSetpointSpeed := UINT_TO_INT(16#C3D4);		
+nExpectedSetpointAcceleration := UINT_TO_INT(16#E5F6);		
+nExpectedSetpointDeceleration := UINT_TO_INT(16#B6A5);	
+nExpectedDigitalOutputs := 16#D4C3;			
+
+F_Memcpy(ADR(stExpectedControlData), ADR(nExpectedCW), 2, FALSE);
+F_Memcpy(ADR(stExpectedControlData) + 2, ADR(nExpectedSetpointSpeed), 2, FALSE);
+F_Memcpy(ADR(stExpectedControlData) + 4, ADR(nExpectedSetpointAcceleration), 2, FALSE);
+F_Memcpy(ADR(stExpectedControlData) + 6, ADR(nExpectedSetpointDeceleration), 2, FALSE);
+F_Memcpy(ADR(stExpectedControlData) + 8, ADR(nExpectedDigitalOutputs), 2, FALSE);
+
+fbDrive.pControl := ADR(stExpectedControlData);
+
+//Act
+fbDrive.GetControlData();
+
+stActualControlData := fbDrive.stControl;
+
+//Assert
+F_Memcpy(ADR(nActualCW), ADR(fbDrive.stControl), 2, FALSE);
+//F_Memcpy(ADR(nActualTargetVelocity), ADR(fbDrive.stControl) + 2, 2, FALSE);
+
+AssertEquals(Expected := nExpectedCW,
+             Actual := nActualCW,
+             Message := 'CW is not correct');
+	 
+AssertEquals(Expected := nExpectedSetpointSpeed,
+             Actual := stActualControlData.nSetpointSpeed,
+             Message := 'SetpointSpeed is not correct');
+			 
+AssertEquals(Expected := nExpectedSetpointAcceleration,
+             Actual := stActualControlData.nSetpointAcceleration,
+             Message := 'SetpointAcceleration is not correct');
+			 
+AssertEquals(Expected := nExpectedSetpointDeceleration,
+             Actual := stActualControlData.nSetpointDeceleration,
+             Message := 'SetpointSpeed is not correct');
+			 
+AssertEquals(Expected := nExpectedDigitalOutputs,
+             Actual := stActualControlData.nDigitalOutputs,
+             Message := 'SetpointDeceleration is not correct');
+			 
+TEST_FINISHED();
+
+
+TEST('Process data to control structure SWAP');
+
+//Arrange
+F_Memcpy(ADR(stExpectedControlData), ADR(nExpectedCW), 2, TRUE);
+F_Memcpy(ADR(stExpectedControlData) + 2, ADR(nExpectedSetpointSpeed), 2, TRUE);
+F_Memcpy(ADR(stExpectedControlData) + 4, ADR(nExpectedSetpointAcceleration), 2, TRUE);
+F_Memcpy(ADR(stExpectedControlData) + 6, ADR(nExpectedSetpointDeceleration), 2, TRUE);
+F_Memcpy(ADR(stExpectedControlData) + 8, ADR(nExpectedDigitalOutputs), 2, TRUE);
+
+fbDrive.stConfig.bSwapProcessData := TRUE;
+
+fbDrive.pControl := ADR(stExpectedControlData);
+
+//Act
+fbDrive.GetControlData();
+
+stActualControlData := fbDrive.stControl;
+
+//Assert
+AssertEquals(Expected := nExpectedCW,
+             Actual := nActualCW,
+             Message := 'CW is not correct');
+	 
+AssertEquals(Expected := nExpectedSetpointSpeed,
+             Actual := stActualControlData.nSetpointSpeed,
+             Message := 'SetpointSpeed is not correct');
+			 
+AssertEquals(Expected := nExpectedSetpointAcceleration,
+             Actual := stActualControlData.nSetpointAcceleration,
+             Message := 'SetpointAcceleration is not correct');
+			 
+AssertEquals(Expected := nExpectedSetpointDeceleration,
+             Actual := stActualControlData.nSetpointDeceleration,
+             Message := 'SetpointSpeed is not correct');
+			 
+AssertEquals(Expected := nExpectedDigitalOutputs,
+             Actual := stActualControlData.nDigitalOutputs,
+             Message := 'SetpointDeceleration is not correct');
+
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Test_ProcessDataStatus" Id="{5599fb1c-5ddb-0580-1ffb-44b2ba7fa5dc}">
+      <Declaration><![CDATA[METHOD Test_ProcessDataStatus : REFERENCE TO FB_Test
+VAR
+	fbDrive 						: FB_SEW_MoviC_Velocity;
+	
+	nExpectedSW						: WORD;
+	nExpectedActualSpeed			: INT;
+	nExpectedActualStatus			: WORD;
+	nExpectedActualTorque			: INT;
+	nExpectedDigitalInputs			: WORD;
+	
+	nActualSW						: WORD;
+	nActualActualSpeed				: INT;
+	nActualActualStatus				: WORD;
+	nActualActualTorque				: INT;
+	nActualDigitalInputs			: WORD;
+
+	stExpectedStatusData 			: ST_SEW_MoviC_Velocity_Status;		
+	stActualStatusData 				: ST_SEW_MoviC_Velocity_Status;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Assign status structure to process data');
+
+//Arrange
+nExpectedSW := 16#A1B2;					
+nExpectedActualSpeed := UINT_TO_INT(16#C3D4);		
+nExpectedActualStatus := 16#E5F6;		
+nExpectedActualTorque := UINT_TO_INT(16#B6A5);	
+nExpectedDigitalInputs := 16#B6A5;			
+	
+F_Memcpy(ADR(fbDrive.stStatus), ADR(nExpectedSW), 2, FALSE);
+F_Memcpy(ADR(fbDrive.stStatus) + 2, ADR(nExpectedActualSpeed), 2, FALSE);
+F_Memcpy(ADR(fbDrive.stStatus) + 4, ADR(nExpectedActualStatus), 2, FALSE);
+F_Memcpy(ADR(fbDrive.stStatus) + 6, ADR(nExpectedActualTorque), 2, FALSE);
+F_Memcpy(ADR(fbDrive.stStatus) + 8, ADR(nExpectedDigitalInputs), 2, FALSE);
+
+fbDrive.pStatus := ADR(stActualStatusData);
+
+//Act
+fbDrive.SetStatusData();
+
+//Assert
+F_Memcpy(ADR(nActualSW), ADR(stActualStatusData), 2, FALSE);
+F_Memcpy(ADR(nActualActualSpeed), ADR(stActualStatusData) + 2, 2, FALSE);
+F_Memcpy(ADR(nActualActualStatus), ADR(stActualStatusData) + 4, 2, FALSE);
+F_Memcpy(ADR(nActualActualTorque), ADR(stActualStatusData) + 6, 2, FALSE);
+F_Memcpy(ADR(nActualDigitalInputs), ADR(stActualStatusData) + 8, 2, FALSE);
+
+AssertEquals(Expected := nExpectedSW,
+             Actual := nActualSW,
+             Message := 'ZSW1 is not correct');
+	 
+AssertEquals(Expected := nExpectedActualSpeed,
+             Actual := nActualActualSpeed,
+             Message := 'ActualVelocity is not correct');	
+
+AssertEquals(Expected := nExpectedActualStatus,
+             Actual := nActualActualStatus,
+             Message := 'ActualVelocity is not correct');
+
+AssertEquals(Expected := nExpectedActualTorque,
+             Actual := nActualActualTorque,
+             Message := 'ActualVelocity is not correct');	
+				 
+AssertEquals(Expected := nExpectedDigitalInputs,
+             Actual := nActualDigitalInputs,
+             Message := 'ActualVelocity is not correct');	
+					 			 
+TEST_FINISHED();
+
+TEST('Assign status structure to process data SWAP');
+
+//Arrange
+nExpectedSW := 16#A1B2;					
+nExpectedActualSpeed := UINT_TO_INT(16#C3D4);		
+nExpectedActualStatus := 16#E5F6;		
+nExpectedActualTorque := UINT_TO_INT(16#B6A5);	
+nExpectedDigitalInputs := 16#B6A5;			
+	
+F_Memcpy(ADR(fbDrive.stStatus), ADR(nExpectedSW), 2, TRUE);
+F_Memcpy(ADR(fbDrive.stStatus) + 2, ADR(nExpectedActualSpeed), 2, TRUE);
+F_Memcpy(ADR(fbDrive.stStatus) + 4, ADR(nExpectedActualStatus), 2, TRUE);
+F_Memcpy(ADR(fbDrive.stStatus) + 6, ADR(nExpectedActualTorque), 2, TRUE);
+F_Memcpy(ADR(fbDrive.stStatus) + 8, ADR(nExpectedDigitalInputs), 2, TRUE);
+
+fbDrive.stConfig.bSwapProcessData := TRUE;
+
+fbDrive.pStatus := ADR(stActualStatusData);
+
+//Act
+fbDrive.SetStatusData();
+
+//Assert
+F_Memcpy(ADR(nActualSW), ADR(stActualStatusData), 2, FALSE);
+F_Memcpy(ADR(nActualActualSpeed), ADR(stActualStatusData) + 2, 2, FALSE);
+F_Memcpy(ADR(nActualActualStatus), ADR(stActualStatusData) + 4, 2, FALSE);
+F_Memcpy(ADR(nActualActualTorque), ADR(stActualStatusData) + 6, 2, FALSE);
+F_Memcpy(ADR(nActualDigitalInputs), ADR(stActualStatusData) + 8, 2, FALSE);
+
+AssertEquals(Expected := nExpectedSW,
+             Actual := nActualSW,
+             Message := 'ZSW1 is not correct');
+	 
+AssertEquals(Expected := nExpectedActualSpeed,
+             Actual := nActualActualSpeed,
+             Message := 'ActualVelocity is not correct');	
+
+AssertEquals(Expected := nExpectedActualStatus,
+             Actual := nActualActualStatus,
+             Message := 'ActualVelocity is not correct');
+
+AssertEquals(Expected := nExpectedActualTorque,
+             Actual := nActualActualTorque,
+             Message := 'ActualVelocity is not correct');	
+				 
+AssertEquals(Expected := nExpectedDigitalInputs,
+             Actual := nActualDigitalInputs,
+             Message := 'ActualVelocity is not correct');			 
+			 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Test_Safety" Id="{0b7fba0b-d6b2-0872-1593-d85f56c92768}">
+      <Declaration><![CDATA[METHOD Test_Safety : REFERENCE TO FB_Test
+VAR
+	fbDrive 					: FB_SEW_MoviC_Velocity;
+		
+	fbSafe						: FB_SEW_Movisafe;
+	
+	stExpectedSTO				: BOOL;		
+	stActualSTO					: BOOL;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST(' Without Safety Interface STO TRUE');
+
+//Arrange
+stExpectedSTO := TRUE;
+fbDrive.bSTO := stExpectedSTO;
+
+//Act
+fbDrive.Safety();
+
+//Assert
+stActualSTO := fbDrive.bSTO;
+
+AssertEquals(Expected := stExpectedSTO,
+             Actual := stActualSTO,
+             Message := 'STO is not correct');
+	 		 
+TEST_FINISHED();
+
+TEST(' Without Safety Interface STO FALSE');
+
+//Arrange
+stExpectedSTO := FALSE;
+fbDrive.bSTO := stExpectedSTO;
+
+//Act
+fbDrive.Safety();
+
+//Assert
+stActualSTO := fbDrive.bSTO;
+
+AssertEquals(Expected := stExpectedSTO,
+             Actual := stActualSTO,
+             Message := 'STO is not correct');
+	 		 
+TEST_FINISHED();
+
+TEST('Safety Interface STO TRUE');
+
+//Arrange
+stExpectedSTO := TRUE;
+
+fbSafe.bSetSTO := stExpectedSTO;
+fbDrive.iMovisafe := fbSafe;
+
+//Act
+fbDrive.Safety();
+
+//Assert
+stActualSTO := fbDrive.bSTO;
+
+AssertEquals(Expected := stExpectedSTO,
+             Actual := stActualSTO,
+             Message := 'STO is not correct');
+	 		 
+TEST_FINISHED();
+
+TEST('Safety Interface FALSE');
+
+//Arrange
+stExpectedSTO := FALSE;
+
+fbSafe.bSetSTO := stExpectedSTO;
+fbDrive.iMovisafe := fbSafe;
+
+//Act
+fbDrive.Safety();
+
+//Assert
+stActualSTO := fbDrive.bSTO;
+
+AssertEquals(Expected := stExpectedSTO,
+             Actual := stActualSTO,
+             Message := 'STO is not correct');
+	 		 
+TEST_FINISHED();
+
+TEST('Safety Interface false, Overwrite FB input');
+
+//Arrange
+stExpectedSTO := FALSE;
+
+fbSafe.bSetSTO := stExpectedSTO;
+fbDrive.iMovisafe := fbSafe;
+fbDrive.bSTO := NOT stExpectedSTO;
+
+//Act
+fbDrive.Safety();
+
+//Assert
+stActualSTO := fbDrive.bSTO;
+
+AssertEquals(Expected := stExpectedSTO,
+             Actual := stActualSTO,
+             Message := 'STO is not correct');
+	 		 
+TEST_FINISHED();
+
+TEST('Safety Interface true, Overwrite FB input');
+
+//Arrange
+stExpectedSTO := TRUE;
+
+fbSafe.bSetSTO := stExpectedSTO;
+fbDrive.iMovisafe := fbSafe;
+fbDrive.bSTO := NOT stExpectedSTO;
+
+//Act
+fbDrive.Safety();
+
+//Assert
+stActualSTO := fbDrive.bSTO;
+
+AssertEquals(Expected := stExpectedSTO,
+             Actual := stActualSTO,
+             Message := 'STO is not correct');
+	 		 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_SEW_MoviC_Velocity_Test">
+      <LineId Id="10" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="29" Count="1" />
+    </LineIds>
+    <LineIds Name="FB_SEW_MoviC_Velocity_Test.Test_Cycle_Status_Const_Mirror">
+      <LineId Id="449" Count="0" />
+      <LineId Id="491" Count="1" />
+      <LineId Id="475" Count="1" />
+      <LineId Id="478" Count="1" />
+      <LineId Id="520" Count="1" />
+      <LineId Id="460" Count="3" />
+      <LineId Id="523" Count="1" />
+      <LineId Id="493" Count="0" />
+      <LineId Id="495" Count="1" />
+      <LineId Id="494" Count="0" />
+      <LineId Id="682" Count="0" />
+      <LineId Id="684" Count="3" />
+      <LineId Id="683" Count="0" />
+      <LineId Id="473" Count="0" />
+      <LineId Id="339" Count="0" />
+      <LineId Id="499" Count="7" />
+      <LineId Id="525" Count="1" />
+      <LineId Id="507" Count="3" />
+      <LineId Id="632" Count="0" />
+      <LineId Id="634" Count="3" />
+      <LineId Id="633" Count="0" />
+      <LineId Id="528" Count="0" />
+      <LineId Id="527" Count="0" />
+      <LineId Id="511" Count="3" />
+      <LineId Id="529" Count="1" />
+      <LineId Id="516" Count="0" />
+      <LineId Id="518" Count="1" />
+      <LineId Id="517" Count="0" />
+      <LineId Id="515" Count="0" />
+      <LineId Id="497" Count="0" />
+      <LineId Id="648" Count="0" />
+      <LineId Id="650" Count="2" />
+      <LineId Id="674" Count="0" />
+      <LineId Id="653" Count="15" />
+      <LineId Id="676" Count="0" />
+      <LineId Id="678" Count="3" />
+      <LineId Id="677" Count="0" />
+      <LineId Id="669" Count="1" />
+      <LineId Id="649" Count="0" />
+      <LineId Id="532" Count="3" />
+      <LineId Id="561" Count="1" />
+      <LineId Id="566" Count="3" />
+      <LineId Id="630" Count="1" />
+      <LineId Id="565" Count="0" />
+      <LineId Id="537" Count="2" />
+      <LineId Id="546" Count="11" />
+      <LineId Id="570" Count="0" />
+      <LineId Id="572" Count="3" />
+      <LineId Id="571" Count="0" />
+      <LineId Id="576" Count="0" />
+      <LineId Id="578" Count="3" />
+      <LineId Id="577" Count="0" />
+      <LineId Id="558" Count="0" />
+      <LineId Id="531" Count="0" />
+      <LineId Id="583" Count="9" />
+      <LineId Id="628" Count="1" />
+      <LineId Id="593" Count="3" />
+      <LineId Id="603" Count="24" />
+      <LineId Id="582" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_MoviC_Velocity_Test.Test_Cycle_Status_Movement">
+      <LineId Id="449" Count="2" />
+      <LineId Id="510" Count="0" />
+      <LineId Id="501" Count="1" />
+      <LineId Id="516" Count="0" />
+      <LineId Id="515" Count="0" />
+      <LineId Id="517" Count="2" />
+      <LineId Id="555" Count="1" />
+      <LineId Id="503" Count="0" />
+      <LineId Id="475" Count="1" />
+      <LineId Id="505" Count="0" />
+      <LineId Id="569" Count="1" />
+      <LineId Id="577" Count="0" />
+      <LineId Id="579" Count="1" />
+      <LineId Id="578" Count="0" />
+      <LineId Id="571" Count="0" />
+      <LineId Id="573" Count="3" />
+      <LineId Id="572" Count="0" />
+      <LineId Id="463" Count="0" />
+      <LineId Id="524" Count="1" />
+      <LineId Id="520" Count="0" />
+      <LineId Id="522" Count="1" />
+      <LineId Id="521" Count="0" />
+      <LineId Id="473" Count="0" />
+      <LineId Id="339" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_MoviC_Velocity_Test.Test_ProcessDataControl">
+      <LineId Id="3" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="162" Count="4" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="169" Count="2" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="11" Count="2" />
+      <LineId Id="175" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="263" Count="0" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="19" Count="6" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="183" Count="1" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="187" Count="1" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="189" Count="0" />
+      <LineId Id="191" Count="1" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="29" Count="2" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="201" Count="4" />
+      <LineId Id="37" Count="1" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="208" Count="4" />
+      <LineId Id="42" Count="2" />
+      <LineId Id="213" Count="18" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="176" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_MoviC_Velocity_Test.Test_ProcessDataStatus">
+      <LineId Id="3" Count="2" />
+      <LineId Id="127" Count="2" />
+      <LineId Id="124" Count="1" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="8" Count="1" />
+      <LineId Id="139" Count="2" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="11" Count="4" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="148" Count="3" />
+      <LineId Id="18" Count="7" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="155" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="158" Count="2" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="162" Count="1" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="261" Count="1" />
+      <LineId Id="196" Count="0" />
+      <LineId Id="198" Count="5" />
+      <LineId Id="206" Count="5" />
+      <LineId Id="259" Count="1" />
+      <LineId Id="214" Count="11" />
+      <LineId Id="228" Count="19" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="197" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_MoviC_Velocity_Test.Test_Safety">
+      <LineId Id="362" Count="3" />
+      <LineId Id="368" Count="11" />
+      <LineId Id="360" Count="0" />
+      <LineId Id="381" Count="16" />
+      <LineId Id="380" Count="0" />
+      <LineId Id="361" Count="0" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="289" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="292" Count="0" />
+      <LineId Id="291" Count="0" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="290" Count="0" />
+      <LineId Id="11" Count="2" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="295" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="19" Count="3" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="317" Count="0" />
+      <LineId Id="298" Count="16" />
+      <LineId Id="297" Count="0" />
+      <LineId Id="319" Count="7" />
+      <LineId Id="338" Count="0" />
+      <LineId Id="327" Count="10" />
+      <LineId Id="318" Count="0" />
+      <LineId Id="340" Count="19" />
+      <LineId Id="339" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -36,7 +36,7 @@ VAR
 END_VAR
 
 VAR CONSTANT
-	POLYNOM			: WORD := 16#4EAB;
+	N_POLYNOM			: WORD := 16#4EAB;
 END_VAR
 
 
@@ -49,7 +49,7 @@ Cycle();
 SetStatusData();]]></ST>
     </Implementation>
     <Method Name="Cycle" Id="{8a6cd320-4fb2-0a0d-2ff0-c4c3f268fd83}">
-      <Declaration><![CDATA[METHOD INTERNAL Cycle
+      <Declaration><![CDATA[METHOD PRIVATE Cycle
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -61,7 +61,7 @@ END_VAR
 	END_IF
 
 (* Calculate received crc *)
-	_nCalculatedCrc := F_CalcCrc16(ADR(stControl), 8, stConfig.nDpDpId, POLYNOM);
+	_nCalculatedCrc := F_CalcCrc16(ADR(stControl), 8, stConfig.nDpDpId, N_POLYNOM);
 
 (* Restart timer, if sequence number has changed *)
 	IF stControl.nRcvSequenceNumber <> _nLastSequenceNumber AND NOT stHstData.bError THEN
@@ -138,7 +138,7 @@ END_VAR
 (* Send data *)
 	stStatus.nSendData				:= BOOL_TO_WORD(stHstData.bSubsOn);
 	stStatus.nSendSequenceNumber	:= stControl.nRcvSequenceNumber;
-	stStatus.nSendCrc 				:= F_CalcCrc16(ADR(stStatus.nSendData), 2, stConfig.nDpDpId, POLYNOM);]]></ST>
+	stStatus.nSendCrc 				:= F_CalcCrc16(ADR(stStatus.nSendData), 2, stConfig.nDpDpId, N_POLYNOM);]]></ST>
       </Implementation>
     </Method>
     <Method Name="GetControlData" Id="{054e9055-5f51-0f04-393f-440d91d1839d}">
@@ -199,7 +199,7 @@ F_Memcpy(pStatus + 4, ADR(stStatus) + 4, 2, stConfig.bSwapProcessData);]]></ST>
       </Implementation>
     </Method>
     <Method Name="SimLogic" Id="{1387c38b-ddea-0e1b-3330-b31f43bbd6c5}">
-      <Declaration><![CDATA[METHOD INTERNAL SimLogic
+      <Declaration><![CDATA[METHOD PRIVATE SimLogic
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -231,7 +231,7 @@ END_VAR
 (* Send data *)
 	stStatus.nSendData				:= 16#80;
 	stStatus.nSendSequenceNumber	:= stControl.nRcvSequenceNumber;
-	stStatus.nSendCrc 				:= F_CalcCrc16(ADR(stStatus.nSendData), 2, stConfig.nDpDpId, POLYNOM);]]></ST>
+	stStatus.nSendCrc 				:= F_CalcCrc16(ADR(stStatus.nSendData), 2, stConfig.nDpDpId, N_POLYNOM);]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="FB_Siemens_RcvDp">

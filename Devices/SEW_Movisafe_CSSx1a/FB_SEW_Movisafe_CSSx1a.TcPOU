@@ -58,7 +58,7 @@ END_VAR
       </Get>
     </Property>
     <Method Name="Cycle" Id="{42ef2a2a-27a6-0c21-2c83-d640f49d6cb3}">
-      <Declaration><![CDATA[METHOD INTERNAL Cycle : BOOL
+      <Declaration><![CDATA[METHOD Internal Cycle : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -147,7 +147,8 @@ END_VAR
       <Implementation>
         <ST><![CDATA[IF pStatus <= 0 THEN RETURN; END_IF
 
-F_MEMCPY(pStatus, ADR(stStatus), SIZEOF(stStatus), stConfig.bSwapProcessData);]]></ST>
+F_MEMCPY(pStatus, ADR(stStatus), SIZEOF(stStatus), stConfig.bSwapProcessData);
+]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="FB_SEW_Movisafe_CSSx1a">
@@ -171,7 +172,8 @@ F_MEMCPY(pStatus, ADR(stStatus), SIZEOF(stStatus), stConfig.bSwapProcessData);]]
     </LineIds>
     <LineIds Name="FB_SEW_Movisafe_CSSx1a.SetStatusData">
       <LineId Id="3" Count="1" />
-      <LineId Id="2" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="12" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

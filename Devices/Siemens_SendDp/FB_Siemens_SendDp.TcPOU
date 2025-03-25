@@ -50,7 +50,7 @@ Cycle();
 SetStatusData();]]></ST>
     </Implementation>
     <Method Name="Cycle" Id="{bc5bb0e4-965e-0eaf-151c-8829a3c104a7}">
-      <Declaration><![CDATA[METHOD INTERNAL Cycle]]></Declaration>
+      <Declaration><![CDATA[METHOD PRIVATE Cycle]]></Declaration>
       <Implementation>
         <ST><![CDATA[(* Simplified communication when using PLCSIM Adv. *)
 	IF OC_Core.GVL_Core.fbSystem.eControllerType = E_ControllerType.PlcSimAdvanced THEN
@@ -177,7 +177,7 @@ F_Memcpy(pStatus + 10, ADR(stStatus) + 10, 2, stConfig.bSwapProcessData);		]]></
       </Implementation>
     </Method>
     <Method Name="SimLogic" Id="{6e002099-19d4-0d6c-2189-7b88c9b44daf}">
-      <Declaration><![CDATA[METHOD INTERNAL SimLogic
+      <Declaration><![CDATA[METHOD PRIVATE SimLogic
 VAR_INPUT
 END_VAR
 ]]></Declaration>

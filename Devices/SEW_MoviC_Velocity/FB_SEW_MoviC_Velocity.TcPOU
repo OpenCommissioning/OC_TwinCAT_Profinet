@@ -148,7 +148,7 @@ _fbBasicDrive.fPosition := stConfig.fInitPosition;]]></ST>
       </Implementation>
     </Method>
     <Method Name="Operation" Id="{55be33a9-833e-0c4d-30ed-3b034a5a20e5}">
-      <Declaration><![CDATA[METHOD INTERNAL Operation
+      <Declaration><![CDATA[METHOD PRIVATE Operation
 VAR_INST
 	fTargetPos			: REAL;
 	fSetpointVel		: REAL;

@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Siemens_SendDp_Test" Id="{4cb7908e-4774-0fba-29a0-4e26524aaea5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Siemens_SendDp_Test EXTENDS TcUnit.FB_TestSuite
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Test_ProcessDataControl();
+Test_ProcessDataStatus();]]></ST>
+    </Implementation>
+    <Method Name="Test_ProcessDataControl" Id="{9333f770-922f-0b09-0409-d08e8a30371d}">
+      <Declaration><![CDATA[METHOD Test_ProcessDataControl : REFERENCE TO FB_Test
+VAR
+	fbDevice 						: FB_Siemens_SendDp;
+	
+	nExpectdRcvData					: WORD;
+	nExpectdRcvSequenceNumber		: WORD;
+	nExpectdRcvCrc					: WORD;	
+	
+	nActualRcvData					: WORD;
+	nActualRcvSequenceNumber		: WORD;
+	nActualRcvCrc					: WORD;
+		
+	stExpectedControlData 			: ST_Siemens_SendDp_Control;		
+	stActualControlData				: ST_Siemens_SendDp_Control;	
+	nDigitalOutputs: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Process data to control structure');
+
+//Arrange
+nExpectdRcvData := 16#A1B2;					
+nExpectdRcvSequenceNumber := 16#C3D4;		
+nExpectdRcvCrc := 16#E5F6;		
+	
+F_Memcpy(ADR(stExpectedControlData), ADR(nExpectdRcvData), 2, FALSE);
+F_Memcpy(ADR(stExpectedControlData) + 2, ADR(nExpectdRcvSequenceNumber), 2, FALSE);
+F_Memcpy(ADR(stExpectedControlData) + 4, ADR(nExpectdRcvCrc), 2, FALSE);
+
+fbDevice.pControl := ADR(stExpectedControlData);
+
+//Act
+fbDevice.GetControlData();
+
+stActualControlData := fbDevice.stControl;
+
+//Assert
+			 
+AssertEquals(Expected := nExpectdRcvData,
+             Actual := stActualControlData.nRcvData,
+             Message := 'RcvData is not correct');
+			 
+AssertEquals(Expected := nExpectdRcvSequenceNumber,
+             Actual := stActualControlData.nRcvSequenceNumber,
+             Message := 'SequenceNumber is not correct');
+			 
+AssertEquals(Expected := nExpectdRcvCrc,
+             Actual := stActualControlData.nRcvCrc,
+             Message := 'RcvCrc is not correct');			 
+			 
+TEST_FINISHED();
+
+
+TEST('Process data to control structure SWAP');
+
+//Arrange
+nExpectdRcvData := 16#A1B2;					
+nExpectdRcvSequenceNumber := 16#C3D4;		
+nExpectdRcvCrc := 16#E5F6;		
+	
+F_Memcpy(ADR(stExpectedControlData), ADR(nExpectdRcvData), 2, TRUE);
+F_Memcpy(ADR(stExpectedControlData) + 2, ADR(nExpectdRcvSequenceNumber), 2, TRUE);
+F_Memcpy(ADR(stExpectedControlData) + 4, ADR(nExpectdRcvCrc), 2, TRUE);
+
+fbDevice.pControl := ADR(stExpectedControlData);
+
+fbDevice.stConfig.bSwapProcessData := TRUE;
+
+//Act
+fbDevice.GetControlData();
+
+stActualControlData := fbDevice.stControl;
+
+//Assert
+			 
+AssertEquals(Expected := nExpectdRcvData,
+             Actual := stActualControlData.nRcvData,
+             Message := 'RcvData is not correct');
+			 
+AssertEquals(Expected := nExpectdRcvSequenceNumber,
+             Actual := stActualControlData.nRcvSequenceNumber,
+             Message := 'SequenceNumber is not correct');
+			 
+AssertEquals(Expected := nExpectdRcvCrc,
+             Actual := stActualControlData.nRcvCrc,
+             Message := 'RcvCrc is not correct');				 
+			 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Test_ProcessDataStatus" Id="{1e943c56-2fdc-0916-0f21-3fa952259a67}">
+      <Declaration><![CDATA[METHOD Test_ProcessDataStatus : REFERENCE TO FB_Test
+VAR
+	fbDevice 						: FB_Siemens_SendDp;
+	
+	nExpectedBoolData				: WORD;
+	nExpectedSendInt00				: INT;
+	nExpectedSendInt01				: INT;
+	nExpectedSendData				: WORD;
+	nExpectedSendSequenceNumber		: WORD;	
+	nExpectedSendCrc				: WORD;
+	
+	stExpectedStatusData 			: ST_Siemens_SendDp_Status;		
+	stActualStatusData 				: ST_Siemens_SendDp_Status;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Assign status structure to process data');
+
+//Arrange
+nExpectedBoolData := 16#A1B2;	
+nExpectedSendInt00 := UINT_TO_INT(16#C3D4);
+nExpectedSendInt01 := UINT_TO_INT(16#E5F6);	
+nExpectedSendData := 16#B6A5;					
+nExpectedSendSequenceNumber := 16#D4C3;	
+nExpectedSendCrc := 16#E2F1;		
+
+F_Memcpy(ADR(fbDevice.stStatus), ADR(nExpectedBoolData), 2, FALSE);
+F_Memcpy(ADR(fbDevice.stStatus) + 2, ADR(nExpectedSendInt00), 2, FALSE);
+F_Memcpy(ADR(fbDevice.stStatus) + 4, ADR(nExpectedSendInt01), 2, FALSE);
+F_Memcpy(ADR(fbDevice.stStatus) + 6, ADR(nExpectedSendData), 2, FALSE);
+F_Memcpy(ADR(fbDevice.stStatus) + 8, ADR(nExpectedSendSequenceNumber), 2, FALSE);
+F_Memcpy(ADR(fbDevice.stStatus) + 10, ADR(nExpectedSendCrc), 2, FALSE);
+
+fbDevice.pStatus := ADR(stActualStatusData);
+
+//Act
+fbDevice.SetStatusData();
+
+//Assert
+AssertEquals(Expected := nExpectedBoolData,
+             Actual := stActualStatusData.nSendBoolData,
+             Message := 'SendBoolData is not correct');
+	 
+AssertEquals(Expected := nExpectedSendInt00,
+             Actual := stActualStatusData.nSendInt00,
+             Message := 'SendInt00 is not correct');	
+
+AssertEquals(Expected := nExpectedSendInt01,
+             Actual := stActualStatusData.nSendInt01,
+             Message := 'SendInt01 is not correct');
+			 
+AssertEquals(Expected := nExpectedSendData,
+             Actual := stActualStatusData.nSendData,
+             Message := 'SendData is not correct');
+	 
+AssertEquals(Expected := nExpectedSendSequenceNumber,
+             Actual := stActualStatusData.nSendSequenceNumber,
+             Message := 'SendSequenceNumber is not correct');	
+
+AssertEquals(Expected := nExpectedSendCrc,
+             Actual := stActualStatusData.nSendCrc,
+             Message := 'SendCrc is not correct');
+					 			 
+TEST_FINISHED();
+
+
+TEST('Assign status structure to process data SWAP');
+
+//Arrange
+nExpectedBoolData := 16#A1B2;	
+nExpectedSendInt00 := UINT_TO_INT(16#C3D4);
+nExpectedSendInt01 := UINT_TO_INT(16#E5F6);	
+nExpectedSendData := 16#B6A5;					
+nExpectedSendSequenceNumber := 16#D4C3;	
+nExpectedSendCrc := 16#E2F1;		
+
+F_Memcpy(ADR(fbDevice.stStatus), ADR(nExpectedBoolData), 2, TRUE);
+F_Memcpy(ADR(fbDevice.stStatus) + 2, ADR(nExpectedSendInt00), 2, TRUE);
+F_Memcpy(ADR(fbDevice.stStatus) + 4, ADR(nExpectedSendInt01), 2, TRUE);
+F_Memcpy(ADR(fbDevice.stStatus) + 6, ADR(nExpectedSendData), 2, TRUE);
+F_Memcpy(ADR(fbDevice.stStatus) + 8, ADR(nExpectedSendSequenceNumber), 2, TRUE);
+F_Memcpy(ADR(fbDevice.stStatus) + 10, ADR(nExpectedSendCrc), 2, TRUE);
+
+fbDevice.pStatus := ADR(stActualStatusData);
+
+fbDevice.stConfig.bSwapProcessData := TRUE;
+
+//Act
+fbDevice.SetStatusData();
+
+//Assert
+AssertEquals(Expected := nExpectedBoolData,
+             Actual := stActualStatusData.nSendBoolData,
+             Message := 'SendBoolData is not correct');
+	 
+AssertEquals(Expected := nExpectedSendInt00,
+             Actual := stActualStatusData.nSendInt00,
+             Message := 'SendInt00 is not correct');	
+
+AssertEquals(Expected := nExpectedSendInt01,
+             Actual := stActualStatusData.nSendInt01,
+             Message := 'SendInt01 is not correct');
+			 
+AssertEquals(Expected := nExpectedSendData,
+             Actual := stActualStatusData.nSendData,
+             Message := 'SendData is not correct');
+	 
+AssertEquals(Expected := nExpectedSendSequenceNumber,
+             Actual := stActualStatusData.nSendSequenceNumber,
+             Message := 'SendSequenceNumber is not correct');	
+
+AssertEquals(Expected := nExpectedSendCrc,
+             Actual := stActualStatusData.nSendCrc,
+             Message := 'SendCrc is not correct');
+					 			 
+TEST_FINISHED();
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_Siemens_SendDp_Test">
+      <LineId Id="10" Count="0" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Siemens_SendDp_Test.Test_ProcessDataControl">
+      <LineId Id="359" Count="5" />
+      <LineId Id="367" Count="0" />
+      <LineId Id="369" Count="2" />
+      <LineId Id="375" Count="8" />
+      <LineId Id="396" Count="17" />
+      <LineId Id="464" Count="9" />
+      <LineId Id="493" Count="0" />
+      <LineId Id="492" Count="0" />
+      <LineId Id="474" Count="17" />
+      <LineId Id="459" Count="1" />
+      <LineId Id="176" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Siemens_SendDp_Test.Test_ProcessDataStatus">
+      <LineId Id="3" Count="2" />
+      <LineId Id="334" Count="1" />
+      <LineId Id="333" Count="0" />
+      <LineId Id="127" Count="2" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="8" Count="1" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="337" Count="0" />
+      <LineId Id="336" Count="0" />
+      <LineId Id="339" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="11" Count="4" />
+      <LineId Id="19" Count="6" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="155" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="340" Count="0" />
+      <LineId Id="342" Count="9" />
+      <LineId Id="341" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="399" Count="0" />
+      <LineId Id="326" Count="0" />
+      <LineId Id="262" Count="0" />
+      <LineId Id="353" Count="16" />
+      <LineId Id="400" Count="1" />
+      <LineId Id="370" Count="28" />
+      <LineId Id="352" Count="0" />
+      <LineId Id="325" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -5,78 +5,206 @@
 
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[//Test_ProcessDataControl();
-//Test_ProcessDataStatus();]]></ST>
+      <ST><![CDATA[Test_ProcessDataControl();
+Test_ProcessDataStatus();
+Test_Cycle_Status_Const_Mirror();]]></ST>
     </Implementation>
+    <Method Name="Test_Cycle_Status_Const_Mirror" Id="{db390c1c-177c-056e-14f1-4fd968bd1454}">
+      <Declaration><![CDATA[METHOD Test_Cycle_Status_Const_Mirror : REFERENCE TO FB_Test
+VAR
+	fbDrive 			: FB_Profidrive_Telegram1;
+	bExpected			: BOOL;
+	stExpected			: ST_Profidrive_Telegram1_Status;
+	bResult 			: BOOL;	
+	stResult			: ST_Profidrive_Telegram1_Status;
+	
+	stSetControl		: ST_Profidrive_Telegram1_Control;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Status CONST TRUE');
+
+bExpected := TRUE;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b8_DeviationWithinTolerance);
+
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'DeviationWithinTolerance not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b11_TorqueOrPowerLimitNotReached);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'TorqueOrPowerLimitNotReached not set correctly');
+			 
+bResult := BIT_TO_BOOL(stResult.b13_NoOvertempAlarm);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'NoOvertempAlarm not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b15_NoAlarmNoOvertempPowerUnit);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'NoAlarmNoOvertempPowerUnit not set correctly');
+	 
+TEST_FINISHED();
+
+TEST('Status CONST FALSE');
+
+bExpected := FALSE;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b3_FaultPresent);
+
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'FaultPresent not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b7_AlarmPresent);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'AlarmPresent not set correctly');
+TEST_FINISHED();
+
+TEST('Status Mirror Control FALSE');
+
+bExpected := FALSE;
+
+stSetControl.b3_EnableOperation := bExpected;
+
+fbDrive.stConfig.bControlRequested := bExpected;
+
+fbDrive.stControl := stSetControl;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b2_OperationEnabled);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'OperationEnabled not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b9_ControlRequested);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'ControlRequested not set correctly');
+
+TEST_FINISHED();
+
+TEST('Status Mirror Control TRUE');
+
+bExpected := TRUE;
+
+stSetControl.b3_EnableOperation := bExpected;
+
+fbDrive.stConfig.bControlRequested := bExpected;
+
+fbDrive.stControl := stSetControl;
+
+fbDrive.Cycle();
+
+stResult := fbDrive.stStatus;
+
+bResult := BIT_TO_BOOL(stResult.b2_OperationEnabled);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'OperationEnabled not set correctly');
+
+bResult := BIT_TO_BOOL(stResult.b9_ControlRequested);
+			 
+AssertEquals(Expected := bExpected,
+             Actual := bResult,
+             Message := 'ControlRequested not set correctly');
+	 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="Test_ProcessDataControl" Id="{16ebd94e-bdad-08df-3f30-2d8391d4539e}">
       <Declaration><![CDATA[METHOD Test_ProcessDataControl : REFERENCE TO FB_Test
 VAR
 	fbDrive 					: FB_Profidrive_Telegram1;
 	
 	nExpectedSTW1 				: WORD;
-	nExpectedNSOLL				: INT;
+	nExpectedTargetVelocity 	: INT;
 	nActualSTW1 				: WORD;
-	nActualNSOLL				: INT;	
-	
-	aExpectedControlData 		: ARRAY[1..4] OF BYTE;
-	aExpectedStatusData 		: ARRAY[1..4] OF BYTE;
+	nActualTargetVelocity		: INT;	
+		
+	aExpectedControlData 		: ST_Profidrive_Telegram1_Control;		
+	aActualControlData			: ST_Profidrive_Telegram1_Control;	
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('Assign Process data Control');
+        <ST><![CDATA[TEST('Process data to control structure');
 
 //Arrange
 nExpectedSTW1 := 16#A1B2;
-nExpectedNSOLL 	:= UINT_TO_INT(16#C3D4);
+nExpectedTargetVelocity := UINT_TO_INT(16#C3D4);
+
 F_Memcpy(ADR(aExpectedControlData), ADR(nExpectedSTW1), 2, FALSE);
-F_Memcpy(ADR(aExpectedControlData) + 2, ADR(nExpectedNSOLL), 2, FALSE);
-// refactor
-//fbDrive.pControl := aExpectedControlData;
+F_Memcpy(ADR(aExpectedControlData) + 2, ADR(nExpectedTargetVelocity), 2, FALSE);
+
+fbDrive.pControl := ADR(aExpectedControlData);
 
 //Act
 fbDrive.GetControlData();
 
 //Assert
 F_Memcpy(ADR(nActualSTW1), ADR(fbDrive.stControl), 2, FALSE);
-F_Memcpy(ADR(nActualNSOLL), ADR(fbDrive.stControl) + 2, 2, FALSE);
+F_Memcpy(ADR(nActualTargetVelocity), ADR(fbDrive.stControl) + 2, 2, FALSE);
 
 AssertEquals(Expected := nExpectedSTW1,
              Actual := nActualSTW1,
-             Message := 'nSTW1 is not correct');
+             Message := 'STW1 is not correct');
 	 
-AssertEquals(Expected := nExpectedNSOLL,
-             Actual := nActualNSOLL,
-             Message := 'nNSOLL is not correct');	
+AssertEquals(Expected := nExpectedTargetVelocity,
+             Actual := nActualTargetVelocity,
+             Message := 'TargetVelocity is not correct');
 
 TEST_FINISHED();
 
 
-TEST('Assign Process data Control Swap');
+TEST('Process data to control structure SWAP');
 
 //Arrange
 nExpectedSTW1 := 16#C3F3;
-nExpectedNSOLL 	:= UINT_TO_INT(16#C3F3);
+nExpectedTargetVelocity := UINT_TO_INT(16#C3F3);
+
 F_Memcpy(ADR(aExpectedControlData), ADR(nExpectedSTW1), 2, TRUE);
-F_Memcpy(ADR(aExpectedControlData) + 2, ADR(nExpectedNSOLL), 2, TRUE);
+F_Memcpy(ADR(aExpectedControlData) + 2, ADR(nExpectedTargetVelocity), 2, TRUE);
 
 fbDrive.stConfig.bSwapProcessData := TRUE;
-// refactor
-//fbDrive.pControl := aExpectedControlData;
+
+fbDrive.pControl := ADR(aExpectedControlData);
 
 //Act
 fbDrive.GetControlData();
 
 //Assert
 F_Memcpy(ADR(nActualSTW1), ADR(fbDrive.stControl), 2, FALSE);
-F_Memcpy(ADR(nActualNSOLL), ADR(fbDrive.stControl) + 2, 2, FALSE);
+F_Memcpy(ADR(nActualTargetVelocity), ADR(fbDrive.stControl) + 2, 2, FALSE);
 
 AssertEquals(Expected := nExpectedSTW1,
              Actual := nActualSTW1,
-             Message := 'nSTW1 is not correct');
+             Message := 'STW1 is not correct');
 	 
-AssertEquals(Expected := nExpectedNSOLL,
-             Actual := nActualNSOLL,
-             Message := 'nNSOLL is not correct');	
+AssertEquals(Expected := nExpectedTargetVelocity,
+             Actual := nActualTargetVelocity,
+             Message := 'TargetVelocity is not correct');	
 
 TEST_FINISHED();]]></ST>
       </Implementation>
@@ -87,92 +215,157 @@ VAR
 	fbDrive 					: FB_Profidrive_Telegram1;
 	
 	nExpectedZSW1 				: WORD;
-	nExpectedNIST				: INT;	
+	nExpectedActualVelocity		: INT;	
 	nActualZSW1 				: WORD;
-	nActualNIST					: INT;	
+	nActualActualVelocity		: INT;	
 
-	aExpectedControlData 		: ARRAY[1..4] OF BYTE;	
-	aExpectedStatusData 		: ARRAY[1..4] OF BYTE;	
+	stExpectedStatusData 		: ST_Profidrive_Telegram1_Status;		
+	stActualStatusData 			: ST_Profidrive_Telegram1_Status;	
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('Assign Process data Status');
+        <ST><![CDATA[TEST('Assign status structure to process data');
 
 //Arrange
 nExpectedZSW1 := 16#A1B2;
-nExpectedNIST 	:= UINT_TO_INT(16#C3D4);
+nExpectedActualVelocity := UINT_TO_INT(16#C3D4);
 F_Memcpy(ADR(fbDrive.stStatus), ADR(nExpectedZSW1), 2, FALSE);
-F_Memcpy(ADR(fbDrive.stStatus) + 2, ADR(nExpectedNIST), 2, FALSE);
-// refactor
-//fbDrive.AssignProcessData(aExpectedControlData, aExpectedStatusData);
+F_Memcpy(ADR(fbDrive.stStatus) + 2, ADR(nExpectedActualVelocity), 2, FALSE);
+
+fbDrive.pStatus := ADR(stActualStatusData);
 
 //Act
 fbDrive.SetStatusData();
 
 //Assert
-F_Memcpy(ADR(nActualZSW1), ADR(aExpectedStatusData), 2, FALSE);
-F_Memcpy(ADR(nActualNIST), ADR(aExpectedStatusData) + 2, 2, FALSE);
+F_Memcpy(ADR(nActualZSW1), ADR(stActualStatusData), 2, FALSE);
+F_Memcpy(ADR(nActualActualVelocity), ADR(stActualStatusData) + 2, 2, FALSE);
 
 AssertEquals(Expected := nExpectedZSW1,
              Actual := nActualZSW1,
-             Message := 'nZSW1 is not correct');
+             Message := 'ZSW1 is not correct');
 	 
-AssertEquals(Expected := nExpectedNIST,
-             Actual := nActualNIST,
-             Message := 'nNIST is not correct');	
+AssertEquals(Expected := nExpectedActualVelocity,
+             Actual := nActualActualVelocity,
+             Message := 'ActualVelocity is not correct');	
 
 TEST_FINISHED();
 
 
-TEST('Assign Process data Status SWAP');
+TEST('Assign status structure to process data SWAP');
 
 //Arrange
 nExpectedZSW1 := 16#A1B2;
-nExpectedNIST 	:= UINT_TO_INT(16#C3D4);
+nExpectedActualVelocity	:= UINT_TO_INT(16#C3D4);
+
 F_Memcpy(ADR(fbDrive.stStatus), ADR(nExpectedZSW1), 2, FALSE);
-F_Memcpy(ADR(fbDrive.stStatus) + 2, ADR(nExpectedNIST), 2, FALSE);
-// refactor
-//fbDrive.AssignProcessData(aExpectedControlData, aExpectedStatusData);
+F_Memcpy(ADR(fbDrive.stStatus) + 2, ADR(nExpectedActualVelocity), 2, FALSE);
+
 fbDrive.stConfig.bSwapProcessData := TRUE;
+fbDrive.pStatus := ADR(stActualStatusData);
 
 //Act
 fbDrive.SetStatusData();
 
 //Assert
-F_Memcpy(ADR(nActualZSW1), ADR(aExpectedStatusData), 2, TRUE);
-F_Memcpy(ADR(nActualNIST), ADR(aExpectedStatusData) + 2, 2, TRUE);
+F_Memcpy(ADR(nActualZSW1), ADR(stActualStatusData), 2, TRUE);
+F_Memcpy(ADR(nActualActualVelocity), ADR(stActualStatusData) + 2, 2, TRUE);
 
 AssertEquals(Expected := nExpectedZSW1,
              Actual := nActualZSW1,
-             Message := 'nZSW1 is not correct');
+             Message := 'ZSW1 is not correct');
 	 
-AssertEquals(Expected := nExpectedNIST,
-             Actual := nActualNIST,
-             Message := 'nNIST is not correct');	
+AssertEquals(Expected := nExpectedActualVelocity,
+             Actual := nActualActualVelocity,
+             Message := 'ActualVelocity is not correct');	
 
 TEST_FINISHED();
 ]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="FB_ProfidriveTelegram1_Test">
-      <LineId Id="3" Count="0" />
+      <LineId Id="10" Count="0" />
       <LineId Id="2" Count="0" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ProfidriveTelegram1_Test.Test_Cycle_Status_Const_Mirror">
+      <LineId Id="449" Count="0" />
+      <LineId Id="491" Count="1" />
+      <LineId Id="475" Count="1" />
+      <LineId Id="478" Count="1" />
+      <LineId Id="520" Count="1" />
+      <LineId Id="460" Count="3" />
+      <LineId Id="523" Count="1" />
+      <LineId Id="493" Count="0" />
+      <LineId Id="495" Count="1" />
+      <LineId Id="494" Count="0" />
+      <LineId Id="642" Count="0" />
+      <LineId Id="644" Count="3" />
+      <LineId Id="643" Count="0" />
+      <LineId Id="648" Count="0" />
+      <LineId Id="650" Count="3" />
+      <LineId Id="649" Count="0" />
+      <LineId Id="473" Count="0" />
+      <LineId Id="339" Count="0" />
+      <LineId Id="499" Count="7" />
+      <LineId Id="525" Count="1" />
+      <LineId Id="507" Count="3" />
+      <LineId Id="528" Count="0" />
+      <LineId Id="527" Count="0" />
+      <LineId Id="511" Count="3" />
+      <LineId Id="497" Count="0" />
+      <LineId Id="532" Count="3" />
+      <LineId Id="561" Count="1" />
+      <LineId Id="655" Count="0" />
+      <LineId Id="630" Count="0" />
+      <LineId Id="656" Count="0" />
+      <LineId Id="631" Count="0" />
+      <LineId Id="565" Count="0" />
+      <LineId Id="537" Count="2" />
+      <LineId Id="546" Count="12" />
+      <LineId Id="531" Count="0" />
+      <LineId Id="583" Count="2" />
+      <LineId Id="681" Count="21" />
+      <LineId Id="626" Count="1" />
+      <LineId Id="582" Count="0" />
     </LineIds>
     <LineIds Name="FB_ProfidriveTelegram1_Test.Test_ProcessDataControl">
-      <LineId Id="3" Count="6" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="5" Count="2" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="107" Count="0" />
       <LineId Id="71" Count="0" />
       <LineId Id="68" Count="0" />
-      <LineId Id="11" Count="27" />
+      <LineId Id="11" Count="2" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="19" Count="8" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="29" Count="5" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="35" Count="3" />
       <LineId Id="70" Count="0" />
       <LineId Id="39" Count="16" />
       <LineId Id="2" Count="0" />
     </LineIds>
     <LineIds Name="FB_ProfidriveTelegram1_Test.Test_ProcessDataStatus">
       <LineId Id="3" Count="6" />
-      <LineId Id="68" Count="0" />
-      <LineId Id="10" Count="26" />
-      <LineId Id="69" Count="0" />
-      <LineId Id="37" Count="18" />
+      <LineId Id="89" Count="1" />
+      <LineId Id="11" Count="16" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="86" Count="1" />
+      <LineId Id="32" Count="2" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="35" Count="1" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="40" Count="15" />
       <LineId Id="2" Count="0" />
     </LineIds>
   </POU>

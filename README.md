@@ -9,16 +9,16 @@ The TwinCAT Profinet Library is used in the TwinCAT PLC project and provides the
 
 ## Referenced libraries
 
-| Library       | Organisation             | Version | Download                                                                                                                           |
-|:--------------|:-------------------------|:-------:|:-----------------------------------------------------------------------------------------------------------------------------------|
-| OC_Core       | Opem Commissioning       | 1.3.1.0 | [OC_Core.library](https://github.com/OpenCommissioning/OC_TwinCAT_Core/releases/download/v1.3.1/OC_Core.library)                   |
-| OC_Profisafe  | Opem Commissioning       | 1.0.0.0 | [OC_Core.library](https://github.com/OpenCommissioning/OC_TwinCAT_Profinet/releases/download/v1.0.0/OC_Profisafe.compiled-library) |                                                                                          |
-| Tc2_Math      | Beckhoff Automation GmbH | 3.4.4.0 | -                                                                                                                                  |
-| Tc2_Standard  | Beckhoff Automation GmbH | 3.4.5.0 | -                                                                                                                                  |
-| Tc2_System    | Beckhoff Automation GmbH | 3.6.4.0 | -                                                                                                                                  |
-| Tc2_Utilities | Beckhoff Automation GmbH | 3.8.2.0 | -                                                                                                                                  |
-| Tc3_Module    | Beckhoff Automation GmbH | 3.4.5.0 | -                                                                                                                                  |
-| TcUnit        | TcUnit.org               | 1.3.0.0 | [TcUnit.library](https://github.com/tcunit/TcUnit/releases/download/1.3.0.0/TcUnit.library)                                        |
+| Library       | Organisation             | Version | Download                                                                                                                                |
+|:--------------|:-------------------------|:-------:|:----------------------------------------------------------------------------------------------------------------------------------------|
+| OC_Core       | Opem Commissioning       | 1.3.1.0 | [OC_Core.library](https://github.com/OpenCommissioning/OC_TwinCAT_Core/releases/download/v1.3.1/OC_Core.library)                        |
+| OC_Profisafe  | Opem Commissioning       | 1.0.0.0 | [OC_Profisafe.library](https://github.com/OpenCommissioning/OC_TwinCAT_Profinet/releases/download/v1.0.0/OC_Profisafe.compiled-library) |                                                                                     |
+| Tc2_Math      | Beckhoff Automation GmbH | 3.4.4.0 | -                                                                                                                                       |
+| Tc2_Standard  | Beckhoff Automation GmbH | 3.4.5.0 | -                                                                                                                                       |
+| Tc2_System    | Beckhoff Automation GmbH | 3.6.4.0 | -                                                                                                                                       |
+| Tc2_Utilities | Beckhoff Automation GmbH | 3.8.2.0 | -                                                                                                                                       |
+| Tc3_Module    | Beckhoff Automation GmbH | 3.4.5.0 | -                                                                                                                                       |
+| TcUnit        | TcUnit.org               | 1.3.0.0 | [TcUnit.library](https://github.com/tcunit/TcUnit/releases/download/1.3.0.0/TcUnit.library)                                             |
 
 > [!NOTE]
 > It is recommended to have the same versions installed on your system.

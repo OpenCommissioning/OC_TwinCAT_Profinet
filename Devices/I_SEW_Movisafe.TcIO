@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <Itf Name="I_SEW_Movisafe" Id="{4d308d10-7209-0ca2-12b5-dec8b03abd5f}">
+    <Declaration><![CDATA[INTERFACE I_SEW_Movisafe
+
+]]></Declaration>
+    <Property Name="bSTO" Id="{2d79631d-512f-06ef-3d6e-7e1fbd71b292}">
+      <Declaration><![CDATA[PROPERTY bSTO : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2f80e9c7-6ce0-08ab-245c-5c74e93d0656}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

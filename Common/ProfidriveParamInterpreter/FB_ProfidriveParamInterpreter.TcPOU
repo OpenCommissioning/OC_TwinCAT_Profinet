@@ -6,7 +6,7 @@ VAR_INPUT
 	(* Pointer to raw user data *)
 	pRawData		: POINTER TO BYTE;
 	(* Pointer to array of parameters *)
-	pParamSet		: POINTER TO ST_ProfidriveParamSet;
+	pParamSet		: POINTER TO ST_ProfidriveParam_Set;
 END_VAR
 VAR_OUTPUT
 	(* Reference number for response *)
@@ -40,7 +40,7 @@ END_VAR
 	nOffsValue := 4 + nParameters * 6;
 
 (* Reset all parameters *)
-	memset(pParamSet, 0, SIZEOF(ST_PROFIdriveParamSet));
+	memset(pParamSet, 0, SIZEOF(ST_ProfidriveParam_Set));
 
 (* Check parameter number *)	
 	IF nParameters = 0 THEN
@@ -115,27 +115,27 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="FormatType" Id="{22c723c6-9784-07b9-1d4d-4b498ce3859e}">
-      <Declaration><![CDATA[METHOD INTERNAL FormatType : E_ProfidriveParamFormat
+      <Declaration><![CDATA[METHOD INTERNAL FormatType : E_ProfidriveParam_Format
 VAR_INPUT
 	nFormat	: BYTE;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE nFormat OF
-	 16#02 : FormatType := E_ProfidriveParamFormat.INT8;
-	 16#03 : FormatType := E_ProfidriveParamFormat.INT16;
-	 16#04 : FormatType := E_ProfidriveParamFormat.INT32;
-	 16#05 : FormatType := E_ProfidriveParamFormat.UINT8;
-	 16#06 : FormatType := E_ProfidriveParamFormat.UINT16;
-	 16#07 : FormatType := E_ProfidriveParamFormat.UINT32;
-	 16#08 : FormatType := E_ProfidriveParamFormat.FLOAT;
-	 16#40 : FormatType := E_ProfidriveParamFormat.ZERO;
-	 16#41 : FormatType := E_ProfidriveParamFormat.BYTE_;
-	 16#42 : FormatType := E_ProfidriveParamFormat.WORD_;
-	 16#43 : FormatType := E_ProfidriveParamFormat.DWORD_;
-	 16#44 : FormatType := E_ProfidriveParamFormat.ERROR;
+	 16#02 : FormatType := E_ProfidriveParam_Format.INT8;
+	 16#03 : FormatType := E_ProfidriveParam_Format.INT16;
+	 16#04 : FormatType := E_ProfidriveParam_Format.INT32;
+	 16#05 : FormatType := E_ProfidriveParam_Format.UINT8;
+	 16#06 : FormatType := E_ProfidriveParam_Format.UINT16;
+	 16#07 : FormatType := E_ProfidriveParam_Format.UINT32;
+	 16#08 : FormatType := E_ProfidriveParam_Format.FLOAT;
+	 16#40 : FormatType := E_ProfidriveParam_Format.ZERO;
+	 16#41 : FormatType := E_ProfidriveParam_Format.BYTE_;
+	 16#42 : FormatType := E_ProfidriveParam_Format.WORD_;
+	 16#43 : FormatType := E_ProfidriveParam_Format.DWORD_;
+	 16#44 : FormatType := E_ProfidriveParam_Format.ERROR;
 ELSE
-	FormatType := E_PROFIdriveParamFormat.UNKNOWN;
+	FormatType := E_ProfidriveParam_Format.UNKNOWN;
 END_CASE]]></ST>
       </Implementation>
     </Method>
@@ -210,8 +210,28 @@ END_VAR]]></Declaration>
 nCommand := 0;
 nAxis := 0;
 nParameters := 0;
-memset(pParamSet, 0, SIZEOF(ST_ProfidriveParamSet));]]></ST>
+memset(pParamSet, 0, SIZEOF(ST_ProfidriveParam_Set));]]></ST>
       </Implementation>
     </Method>
+    <LineIds Name="FB_ProfidriveParamInterpreter">
+      <LineId Id="111" Count="59" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ProfidriveParamInterpreter.FormatSize">
+      <LineId Id="3" Count="14" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ProfidriveParamInterpreter.FormatType">
+      <LineId Id="3" Count="14" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ProfidriveParamInterpreter.MakeResponse">
+      <LineId Id="3" Count="48" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ProfidriveParamInterpreter.Reset">
+      <LineId Id="3" Count="3" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
   </POU>
 </TcPlcObject>

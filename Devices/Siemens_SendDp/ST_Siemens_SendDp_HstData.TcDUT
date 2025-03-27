@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Siemens_SendDp_HstData" Id="{ce41ea38-650d-0515-339c-8cae0e6619cf}">
+    <Declaration><![CDATA[TYPE ST_Siemens_SendDp_HstData :
+STRUCT
+	bError		: BOOL;
+	bSubsOn		: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

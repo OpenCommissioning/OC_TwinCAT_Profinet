@@ -1,4 +1,4 @@
-# Open Commissioning: TwinCAT Profisafe Library
+# Open Commissioning: TwinCAT Profinet Library
 
 The TwinCAT Profinet Library is used in the TwinCAT PLC project and provides the behaviour models for Profinet devices as function blocks.
 

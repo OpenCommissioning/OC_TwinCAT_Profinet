@@ -8,7 +8,7 @@ STRUCT
 	nNumber		: UINT;
 	nSubIndex	: UINT;
 	nElements	: BYTE;
-	nFormat		: E_ProfidriveParamFormat;
+	nFormat		: E_ProfidriveParam_Format;
 	aValue		: ARRAY[0..234] OF BYTE;
 END_STRUCT
 END_TYPE]]></Declaration>

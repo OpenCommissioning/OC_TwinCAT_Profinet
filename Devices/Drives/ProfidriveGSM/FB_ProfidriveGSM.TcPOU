@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_ProfidriveGSM" Id="{67f99ce3-3e85-0713-170c-0cb2b056b330}" SpecialFunc="None">
     <Declaration><![CDATA[// Profidrive General State Machine
-FUNCTION_BLOCK INTERNAL FB_ProfidriveGSM
+FUNCTION_BLOCK FB_ProfidriveGSM
 VAR_INPUT
 	bPowerOn					: BOOL := TRUE;
 	bStandstill					: BOOL;

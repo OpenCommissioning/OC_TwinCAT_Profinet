@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="PRG_TEST" Id="{9526a852-d025-00b3-3835-d026c4e6e28a}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_TEST
-VAR	
+VAR
 	FB_ProfidriveGSM_Test : FB_ProfidriveGSM_Test;
 	FB_ProfidriveTelegram1_Test : FB_ProfidriveTelegram1_Test;
 END_VAR

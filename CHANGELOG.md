@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/OpenCommissioning/OC_TwinCAT_Profinet/compare/v1.0.0...v1.0.1) (2025-06-27)
+
+
+### Bug Fixes
+
+* hotifx core reference ([00285b5](https://github.com/OpenCommissioning/OC_TwinCAT_Profinet/commit/00285b5814498a8ae6c27bfd959191b86aba5415))
+* typo ([8f134f1](https://github.com/OpenCommissioning/OC_TwinCAT_Profinet/commit/8f134f17658617a5e0807f841e201bc72cc7dcef))
+
 # 1.0.0 (2025-03-27)
 
 

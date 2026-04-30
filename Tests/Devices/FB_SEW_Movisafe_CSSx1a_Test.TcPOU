@@ -1,0 +1,701 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_SEW_Movisafe_CSSx1a_Test" Id="{31e17366-defb-0d26-28c0-fb90850eae6c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SEW_Movisafe_CSSx1a_Test EXTENDS TcUnit.FB_TestSuite
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Test_Cycle();
+Test_ProcessDataControl();
+Test_ProcessDataStatus();]]></ST>
+    </Implementation>
+    <Method Name="Test_Cycle" Id="{e8eb46a3-0013-07aa-35b1-85ee3825ddb1}">
+      <Declaration><![CDATA[METHOD Test_Cycle : REFERENCE TO FB_Test
+VAR
+	fbDevice 						: FB_SEW_Movisafe_CSSx1a;
+	
+	stSetControl					: ST_SEW_Movisafe_CSSx1a_Control;
+
+	stExpectedStatusData 			: ST_SEW_Movisafe_CSSx1a_Status;		
+	stActualStatusData 				: ST_SEW_Movisafe_CSSx1a_Status;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Cycle Control FALSE');
+
+//Arrange
+stSetControl.b0_0_STO				:=	FALSE;	
+stSetControl.b0_1_SLI			    :=  FALSE;
+stSetControl.b0_2_SBT			    :=  FALSE;
+stSetControl.b0_3_Reserved		    :=  FALSE;
+stSetControl.b0_4_MutingEncErr	    :=  FALSE;
+stSetControl.b0_5_TestModeActice	:=  FALSE;
+stSetControl.b0_6_AckFDI			:=  FALSE;
+stSetControl.b0_7_AckError		    :=  FALSE;
+stSetControl.b1_0_F_DO0			    :=  FALSE;
+stSetControl.b1_1_F_DO1			    :=  FALSE;
+stSetControl.b1_2_Reserved		    :=  FALSE;
+stSetControl.b1_3_Reserved		    :=  FALSE;
+stSetControl.b1_4_Reserved		    :=  FALSE;
+stSetControl.b1_5_Reserved		    :=  FALSE;
+stSetControl.b1_6_Reserved		    :=  FALSE;
+stSetControl.b1_7_Reserved		    :=  FALSE;
+stSetControl.b2_0_SOS1			    :=  FALSE;
+stSetControl.b2_1_Reserved		    :=  FALSE;
+stSetControl.b2_2_SSx1			    :=  FALSE;
+stSetControl.b2_3_SSx2			    :=  FALSE;
+stSetControl.b2_4_SDI1			    :=  FALSE;
+stSetControl.b2_5_SDI2			    :=  FALSE;
+stSetControl.b2_6_SLI1			    :=  FALSE;
+stSetControl.b2_7_SLI2			    :=  FALSE;
+stSetControl.b3_0_SLS1			    :=  FALSE;
+stSetControl.b3_1_SLS2			    :=  FALSE;
+stSetControl.b3_2_SLS3			    :=  FALSE;
+stSetControl.b3_3_SLS4			    :=  FALSE;
+stSetControl.b3_4_SSR1			    :=  FALSE;
+stSetControl.b3_5_SSR2			    :=  FALSE;
+stSetControl.b3_6_Reserved		    :=  FALSE;
+stSetControl.b3_7_Reserved		    :=  FALSE;
+stSetControl.b4_0_SLA1			    :=  FALSE;
+stSetControl.b4_1_SLA2			    :=  FALSE;
+stSetControl.b4_2_Reserved		    :=  FALSE;
+stSetControl.b4_3_Reserved		    :=  FALSE;
+stSetControl.b4_4_Reserved		    :=  FALSE;
+stSetControl.b4_5_Reserved		    :=  FALSE;
+stSetControl.b4_6_Reserved		    :=  FALSE;
+stSetControl.b4_7_Reserved		    :=  FALSE;
+
+stExpectedStatusData.b0_0_STOActive			:= stSetControl.b0_0_STO;
+stExpectedStatusData.b0_1_ASFDiag		    := FALSE;
+stExpectedStatusData.b0_2_SBTActive		    := FALSE;
+stExpectedStatusData.b0_3_InputDataValid	:= TRUE;
+stExpectedStatusData.b0_4_MutingEncErr	    := stSetControl.b0_4_MutingEncErr;
+stExpectedStatusData.b0_5_TestModeActive	:= stSetControl.b0_5_TestModeActice;
+stExpectedStatusData.b0_6_Warning		    := FALSE;
+stExpectedStatusData.b0_7_ErrorState		:= FALSE;
+stExpectedStatusData.b1_0_F_DI0			    := FALSE;
+stExpectedStatusData.b1_1_F_DI1			    := FALSE;
+stExpectedStatusData.b1_2_F_DI2			    := FALSE;
+stExpectedStatusData.b1_3_F_DI3			    := FALSE;
+stExpectedStatusData.b1_4_Reserved		    := FALSE;
+stExpectedStatusData.b1_5_Reserved		    := FALSE;
+stExpectedStatusData.b1_6_Reserved		    := FALSE;
+stExpectedStatusData.b1_7_Reserved		    := FALSE;
+stExpectedStatusData.b2_0_SOS1			    := NOT stSetControl.b2_0_SOS1;
+stExpectedStatusData.b2_1_Reserved		    := FALSE;                  
+stExpectedStatusData.b2_2_SSx1			    := NOT stSetControl.b2_2_SSx1;
+stExpectedStatusData.b2_3_SSx2			    := NOT stSetControl.b2_3_SSx2;
+stExpectedStatusData.b2_4_SDI1			    := NOT stSetControl.b2_4_SDI1;
+stExpectedStatusData.b2_5_SDI2			    := NOT stSetControl.b2_5_SDI2;
+stExpectedStatusData.b2_6_SLI1			    := NOT stSetControl.b2_6_SLI1;
+stExpectedStatusData.b2_7_SLI2			    := NOT stSetControl.b2_7_SLI2;
+stExpectedStatusData.b3_0_SLS1			    := NOT stSetControl.b3_0_SLS1;
+stExpectedStatusData.b3_1_SLS2			    := NOT stSetControl.b3_1_SLS2;
+stExpectedStatusData.b3_2_SLS3			    := NOT stSetControl.b3_2_SLS3;
+stExpectedStatusData.b3_3_SLS4			    := NOT stSetControl.b3_3_SLS4;
+stExpectedStatusData.b3_4_SSR1			    := NOT stSetControl.b3_4_SSR1;
+stExpectedStatusData.b3_5_SSR2			    := NOT stSetControl.b3_5_SSR2;
+stExpectedStatusData.b3_6_Reserved		    := FALSE;
+stExpectedStatusData.b3_7_Reserved		    := FALSE;
+stExpectedStatusData.b4_0_SLA1			    := NOT stSetControl.b4_0_SLA1;
+stExpectedStatusData.b4_1_SLA2			    := NOT stSetControl.b4_1_SLA2;
+stExpectedStatusData.b4_2_SSM1			    := FALSE;
+stExpectedStatusData.b4_3_SSM2			    := FALSE;
+stExpectedStatusData.b4_4_SSM3			    := FALSE;
+stExpectedStatusData.b4_5_SSM4			    := FALSE;
+stExpectedStatusData.b4_6_Reserved		    := FALSE;
+stExpectedStatusData.b4_7_Reserved		    := FALSE;
+stExpectedStatusData.b5_0_Reserved		    := FALSE;
+stExpectedStatusData.b5_1_Reserved		    := FALSE;
+stExpectedStatusData.b5_2_Reserved		    := FALSE;
+stExpectedStatusData.b5_3_Reserved		    := FALSE;
+stExpectedStatusData.b5_4_Reserved		    := FALSE;
+stExpectedStatusData.b5_5_Reserved		    := FALSE;
+stExpectedStatusData.b5_6_Reserved		    := FALSE;
+stExpectedStatusData.b5_7_Reserved	        := FALSE;
+	
+//Act
+
+fbDevice.stControl := stSetControl;
+fbDevice.Cycle();
+stActualStatusData := fbDevice.stStatus ;
+
+//Assert
+
+AssertEquals(Expected := stExpectedStatusData,
+             Actual := stActualStatusData,
+             Message := 'Status is not correct');
+	 					 			 
+TEST_FINISHED();
+
+TEST('Cycle Control TRUE');
+
+//Arrange
+stSetControl.b0_0_STO				:=	TRUE;	
+stSetControl.b0_1_SLI			    :=  TRUE;
+stSetControl.b0_2_SBT			    :=  TRUE;
+stSetControl.b0_3_Reserved		    :=  TRUE;
+stSetControl.b0_4_MutingEncErr	    :=  TRUE;
+stSetControl.b0_5_TestModeActice	:=  TRUE;
+stSetControl.b0_6_AckFDI			:=  TRUE;
+stSetControl.b0_7_AckError		    :=  TRUE;
+stSetControl.b1_0_F_DO0			    :=  TRUE;
+stSetControl.b1_1_F_DO1			    :=  TRUE;
+stSetControl.b1_2_Reserved		    :=  TRUE;
+stSetControl.b1_3_Reserved		    :=  TRUE;
+stSetControl.b1_4_Reserved		    :=  TRUE;
+stSetControl.b1_5_Reserved		    :=  TRUE;
+stSetControl.b1_6_Reserved		    :=  TRUE;
+stSetControl.b1_7_Reserved		    :=  TRUE;
+stSetControl.b2_0_SOS1			    :=  TRUE;
+stSetControl.b2_1_Reserved		    :=  TRUE;
+stSetControl.b2_2_SSx1			    :=  TRUE;
+stSetControl.b2_3_SSx2			    :=  TRUE;
+stSetControl.b2_4_SDI1			    :=  TRUE;
+stSetControl.b2_5_SDI2			    :=  TRUE;
+stSetControl.b2_6_SLI1			    :=  TRUE;
+stSetControl.b2_7_SLI2			    :=  TRUE;
+stSetControl.b3_0_SLS1			    :=  TRUE;
+stSetControl.b3_1_SLS2			    :=  TRUE;
+stSetControl.b3_2_SLS3			    :=  TRUE;
+stSetControl.b3_3_SLS4			    :=  TRUE;
+stSetControl.b3_4_SSR1			    :=  TRUE;
+stSetControl.b3_5_SSR2			    :=  TRUE;
+stSetControl.b3_6_Reserved		    :=  TRUE;
+stSetControl.b3_7_Reserved		    :=  TRUE;
+stSetControl.b4_0_SLA1			    :=  TRUE;
+stSetControl.b4_1_SLA2			    :=  TRUE;
+stSetControl.b4_2_Reserved		    :=  TRUE;
+stSetControl.b4_3_Reserved		    :=  TRUE;
+stSetControl.b4_4_Reserved		    :=  TRUE;
+stSetControl.b4_5_Reserved		    :=  TRUE;
+stSetControl.b4_6_Reserved		    :=  TRUE;
+stSetControl.b4_7_Reserved		    :=  TRUE;
+
+stExpectedStatusData.b0_0_STOActive			:= stSetControl.b0_0_STO;
+stExpectedStatusData.b0_1_ASFDiag		    := FALSE;
+stExpectedStatusData.b0_2_SBTActive		    := FALSE;
+stExpectedStatusData.b0_3_InputDataValid	:= TRUE;
+stExpectedStatusData.b0_4_MutingEncErr	    := stSetControl.b0_4_MutingEncErr;
+stExpectedStatusData.b0_5_TestModeActive	:= stSetControl.b0_5_TestModeActice;
+stExpectedStatusData.b0_6_Warning		    := FALSE;
+stExpectedStatusData.b0_7_ErrorState		:= FALSE;
+stExpectedStatusData.b1_0_F_DI0			    := FALSE;
+stExpectedStatusData.b1_1_F_DI1			    := FALSE;
+stExpectedStatusData.b1_2_F_DI2			    := FALSE;
+stExpectedStatusData.b1_3_F_DI3			    := FALSE;
+stExpectedStatusData.b1_4_Reserved		    := FALSE;
+stExpectedStatusData.b1_5_Reserved		    := FALSE;
+stExpectedStatusData.b1_6_Reserved		    := FALSE;
+stExpectedStatusData.b1_7_Reserved		    := FALSE;
+stExpectedStatusData.b2_0_SOS1			    := NOT stSetControl.b2_0_SOS1;
+stExpectedStatusData.b2_1_Reserved		    := FALSE;                  
+stExpectedStatusData.b2_2_SSx1			    := NOT stSetControl.b2_2_SSx1;
+stExpectedStatusData.b2_3_SSx2			    := NOT stSetControl.b2_3_SSx2;
+stExpectedStatusData.b2_4_SDI1			    := NOT stSetControl.b2_4_SDI1;
+stExpectedStatusData.b2_5_SDI2			    := NOT stSetControl.b2_5_SDI2;
+stExpectedStatusData.b2_6_SLI1			    := NOT stSetControl.b2_6_SLI1;
+stExpectedStatusData.b2_7_SLI2			    := NOT stSetControl.b2_7_SLI2;
+stExpectedStatusData.b3_0_SLS1			    := NOT stSetControl.b3_0_SLS1;
+stExpectedStatusData.b3_1_SLS2			    := NOT stSetControl.b3_1_SLS2;
+stExpectedStatusData.b3_2_SLS3			    := NOT stSetControl.b3_2_SLS3;
+stExpectedStatusData.b3_3_SLS4			    := NOT stSetControl.b3_3_SLS4;
+stExpectedStatusData.b3_4_SSR1			    := NOT stSetControl.b3_4_SSR1;
+stExpectedStatusData.b3_5_SSR2			    := NOT stSetControl.b3_5_SSR2;
+stExpectedStatusData.b3_6_Reserved		    := FALSE;
+stExpectedStatusData.b3_7_Reserved		    := FALSE;
+stExpectedStatusData.b4_0_SLA1			    := NOT stSetControl.b4_0_SLA1;
+stExpectedStatusData.b4_1_SLA2			    := NOT stSetControl.b4_1_SLA2;
+stExpectedStatusData.b4_2_SSM1			    := FALSE;
+stExpectedStatusData.b4_3_SSM2			    := FALSE;
+stExpectedStatusData.b4_4_SSM3			    := FALSE;
+stExpectedStatusData.b4_5_SSM4			    := FALSE;
+stExpectedStatusData.b4_6_Reserved		    := FALSE;
+stExpectedStatusData.b4_7_Reserved		    := FALSE;
+stExpectedStatusData.b5_0_Reserved		    := FALSE;
+stExpectedStatusData.b5_1_Reserved		    := FALSE;
+stExpectedStatusData.b5_2_Reserved		    := FALSE;
+stExpectedStatusData.b5_3_Reserved		    := FALSE;
+stExpectedStatusData.b5_4_Reserved		    := FALSE;
+stExpectedStatusData.b5_5_Reserved		    := FALSE;
+stExpectedStatusData.b5_6_Reserved		    := FALSE;
+stExpectedStatusData.b5_7_Reserved	        := FALSE;
+	
+//Act
+
+fbDevice.stControl := stSetControl;
+fbDevice.Cycle();
+stActualStatusData := fbDevice.stStatus ;
+
+//Assert
+
+AssertEquals(Expected := stExpectedStatusData,
+             Actual := stActualStatusData,
+             Message := 'Status is not correct');
+	 					 			 
+TEST_FINISHED();
+
+TEST('Cycle FB Inputs');
+
+//Arrange
+stSetControl.b0_0_STO				:=	FALSE;	
+stSetControl.b0_1_SLI			    :=  FALSE;
+stSetControl.b0_2_SBT			    :=  FALSE;
+stSetControl.b0_3_Reserved		    :=  FALSE;
+stSetControl.b0_4_MutingEncErr	    :=  FALSE;
+stSetControl.b0_5_TestModeActice	:=  FALSE;
+stSetControl.b0_6_AckFDI			:=  FALSE;
+stSetControl.b0_7_AckError		    :=  FALSE;
+stSetControl.b1_0_F_DO0			    :=  FALSE;
+stSetControl.b1_1_F_DO1			    :=  FALSE;
+stSetControl.b1_2_Reserved		    :=  FALSE;
+stSetControl.b1_3_Reserved		    :=  FALSE;
+stSetControl.b1_4_Reserved		    :=  FALSE;
+stSetControl.b1_5_Reserved		    :=  FALSE;
+stSetControl.b1_6_Reserved		    :=  FALSE;
+stSetControl.b1_7_Reserved		    :=  FALSE;
+stSetControl.b2_0_SOS1			    :=  FALSE;
+stSetControl.b2_1_Reserved		    :=  FALSE;
+stSetControl.b2_2_SSx1			    :=  FALSE;
+stSetControl.b2_3_SSx2			    :=  FALSE;
+stSetControl.b2_4_SDI1			    :=  FALSE;
+stSetControl.b2_5_SDI2			    :=  FALSE;
+stSetControl.b2_6_SLI1			    :=  FALSE;
+stSetControl.b2_7_SLI2			    :=  FALSE;
+stSetControl.b3_0_SLS1			    :=  FALSE;
+stSetControl.b3_1_SLS2			    :=  FALSE;
+stSetControl.b3_2_SLS3			    :=  FALSE;
+stSetControl.b3_3_SLS4			    :=  FALSE;
+stSetControl.b3_4_SSR1			    :=  FALSE;
+stSetControl.b3_5_SSR2			    :=  FALSE;
+stSetControl.b3_6_Reserved		    :=  FALSE;
+stSetControl.b3_7_Reserved		    :=  FALSE;
+stSetControl.b4_0_SLA1			    :=  FALSE;
+stSetControl.b4_1_SLA2			    :=  FALSE;
+stSetControl.b4_2_Reserved		    :=  FALSE;
+stSetControl.b4_3_Reserved		    :=  FALSE;
+stSetControl.b4_4_Reserved		    :=  FALSE;
+stSetControl.b4_5_Reserved		    :=  FALSE;
+stSetControl.b4_6_Reserved		    :=  FALSE;
+stSetControl.b4_7_Reserved		    :=  FALSE;
+
+fbDevice.bASFDiag := TRUE;
+fbDevice.bF_DI0 := TRUE;
+fbDevice.bF_DI1 := TRUE;
+fbDevice.bF_DI2 := TRUE;
+fbDevice.bF_DI3 := TRUE;
+fbDevice.bSBTActive := TRUE;
+fbDevice.bSSM1 := TRUE;
+fbDevice.bSSM2 := TRUE;
+fbDevice.bSSM3 := TRUE;
+fbDevice.bSSM4 := TRUE;
+
+stExpectedStatusData.b0_0_STOActive			:= stSetControl.b0_0_STO;
+stExpectedStatusData.b0_1_ASFDiag		    := TRUE;
+stExpectedStatusData.b0_2_SBTActive		    := TRUE;
+stExpectedStatusData.b0_3_InputDataValid	:= TRUE;
+stExpectedStatusData.b0_4_MutingEncErr	    := stSetControl.b0_4_MutingEncErr;
+stExpectedStatusData.b0_5_TestModeActive	:= stSetControl.b0_5_TestModeActice;
+stExpectedStatusData.b0_6_Warning		    := FALSE;
+stExpectedStatusData.b0_7_ErrorState		:= FALSE;
+stExpectedStatusData.b1_0_F_DI0			    := TRUE;
+stExpectedStatusData.b1_1_F_DI1			    := TRUE;
+stExpectedStatusData.b1_2_F_DI2			    := TRUE;
+stExpectedStatusData.b1_3_F_DI3			    := TRUE;
+stExpectedStatusData.b1_4_Reserved		    := FALSE;
+stExpectedStatusData.b1_5_Reserved		    := FALSE;
+stExpectedStatusData.b1_6_Reserved		    := FALSE;
+stExpectedStatusData.b1_7_Reserved		    := FALSE;
+stExpectedStatusData.b2_0_SOS1			    := NOT stSetControl.b2_0_SOS1;
+stExpectedStatusData.b2_1_Reserved		    := FALSE;                  
+stExpectedStatusData.b2_2_SSx1			    := NOT stSetControl.b2_2_SSx1;
+stExpectedStatusData.b2_3_SSx2			    := NOT stSetControl.b2_3_SSx2;
+stExpectedStatusData.b2_4_SDI1			    := NOT stSetControl.b2_4_SDI1;
+stExpectedStatusData.b2_5_SDI2			    := NOT stSetControl.b2_5_SDI2;
+stExpectedStatusData.b2_6_SLI1			    := NOT stSetControl.b2_6_SLI1;
+stExpectedStatusData.b2_7_SLI2			    := NOT stSetControl.b2_7_SLI2;
+stExpectedStatusData.b3_0_SLS1			    := NOT stSetControl.b3_0_SLS1;
+stExpectedStatusData.b3_1_SLS2			    := NOT stSetControl.b3_1_SLS2;
+stExpectedStatusData.b3_2_SLS3			    := NOT stSetControl.b3_2_SLS3;
+stExpectedStatusData.b3_3_SLS4			    := NOT stSetControl.b3_3_SLS4;
+stExpectedStatusData.b3_4_SSR1			    := NOT stSetControl.b3_4_SSR1;
+stExpectedStatusData.b3_5_SSR2			    := NOT stSetControl.b3_5_SSR2;
+stExpectedStatusData.b3_6_Reserved		    := FALSE;
+stExpectedStatusData.b3_7_Reserved		    := FALSE;
+stExpectedStatusData.b4_0_SLA1			    := NOT stSetControl.b4_0_SLA1;
+stExpectedStatusData.b4_1_SLA2			    := NOT stSetControl.b4_1_SLA2;
+stExpectedStatusData.b4_2_SSM1			    := TRUE;
+stExpectedStatusData.b4_3_SSM2			    := TRUE;
+stExpectedStatusData.b4_4_SSM3			    := TRUE;
+stExpectedStatusData.b4_5_SSM4			    := TRUE;
+stExpectedStatusData.b4_6_Reserved		    := FALSE;
+stExpectedStatusData.b4_7_Reserved		    := FALSE;
+stExpectedStatusData.b5_0_Reserved		    := FALSE;
+stExpectedStatusData.b5_1_Reserved		    := FALSE;
+stExpectedStatusData.b5_2_Reserved		    := FALSE;
+stExpectedStatusData.b5_3_Reserved		    := FALSE;
+stExpectedStatusData.b5_4_Reserved		    := FALSE;
+stExpectedStatusData.b5_5_Reserved		    := FALSE;
+stExpectedStatusData.b5_6_Reserved		    := FALSE;
+stExpectedStatusData.b5_7_Reserved	        := FALSE;
+	
+//Act
+
+fbDevice.stControl := stSetControl;
+fbDevice.Cycle();
+stActualStatusData := fbDevice.stStatus ;
+
+//Assert
+
+AssertEquals(Expected := stExpectedStatusData,
+             Actual := stActualStatusData,
+             Message := 'Status is not correct');
+	 					 			 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Test_ProcessDataControl" Id="{1907765c-79c0-0519-015b-3651dbae9588}">
+      <Declaration><![CDATA[METHOD Test_ProcessDataControl : REFERENCE TO FB_Test
+VAR
+	fbDevice 					: FB_SEW_Movisafe_CSSx1a;
+
+	stExpectedControlData 		: ST_SEW_Movisafe_CSSx1a_Control;		
+	stExpectedControlDataSwap	: ST_SEW_Movisafe_CSSx1a_Control;	
+	stActualControlData			: ST_SEW_Movisafe_CSSx1a_Control;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Process data to control structure');
+
+//Arrange
+stExpectedControlData.b0_0_STO 				:= TRUE;
+stExpectedControlData.b0_1_SLI 				:= TRUE;
+stExpectedControlData.b0_2_SBT 				:= FALSE;
+stExpectedControlData.b0_3_Reserved		    := TRUE;
+stExpectedControlData.b0_4_MutingEncErr	    := TRUE;
+stExpectedControlData.b0_5_TestModeActice	:= TRUE;
+stExpectedControlData.b0_6_AckFDI			:= TRUE;
+stExpectedControlData.b0_7_AckError		    := FALSE;
+stExpectedControlData.b1_0_F_DO0			:= FALSE;
+stExpectedControlData.b1_1_F_DO1			:= TRUE;
+stExpectedControlData.b1_2_Reserved		    := TRUE;
+stExpectedControlData.b1_3_Reserved		    := FALSE;
+stExpectedControlData.b1_4_Reserved		    := TRUE;
+stExpectedControlData.b1_5_Reserved		    := TRUE;
+stExpectedControlData.b1_6_Reserved		    := FALSE;
+stExpectedControlData.b1_7_Reserved		    := TRUE;
+stExpectedControlData.b2_0_SOS1			    := TRUE;
+stExpectedControlData.b2_1_Reserved		    := FALSE;
+stExpectedControlData.b2_2_SSx1			    := FALSE;
+stExpectedControlData.b2_3_SSx2			    := FALSE;
+stExpectedControlData.b2_4_SDI1			    := TRUE;
+stExpectedControlData.b2_5_SDI2			    := TRUE;
+stExpectedControlData.b2_6_SLI1			    := TRUE;
+stExpectedControlData.b2_7_SLI2			    := FALSE;
+stExpectedControlData.b3_0_SLS1			    := TRUE;
+stExpectedControlData.b3_1_SLS2			    := TRUE;
+stExpectedControlData.b3_2_SLS3			    := TRUE;
+stExpectedControlData.b3_3_SLS4			    := TRUE;
+stExpectedControlData.b3_4_SSR1			    := TRUE;
+stExpectedControlData.b3_5_SSR2			    := TRUE;
+stExpectedControlData.b3_6_Reserved		    := TRUE;
+stExpectedControlData.b3_7_Reserved		    := FALSE;
+stExpectedControlData.b4_0_SLA1			    := FALSE;
+stExpectedControlData.b4_1_SLA2			    := TRUE;
+stExpectedControlData.b4_2_Reserved		    := TRUE;
+stExpectedControlData.b4_3_Reserved		    := TRUE;
+stExpectedControlData.b4_4_Reserved		    := TRUE;
+stExpectedControlData.b4_5_Reserved		    := FALSE;
+stExpectedControlData.b4_6_Reserved		    := TRUE;
+stExpectedControlData.b4_7_Reserved		    := FALSE;
+
+fbDevice.pControl := ADR(stExpectedControlData);
+
+//Act
+fbDevice.GetControlData();
+
+stActualControlData := fbDevice.stControl;
+
+//Assert
+AssertEquals(Expected := stExpectedControlData,
+             Actual := stActualControlData,
+             Message := 'ControlData is not correct');
+	 			 			 
+TEST_FINISHED();
+
+
+TEST('Process data to control structure SWAP');
+
+//Arrange
+stExpectedControlData.b0_0_STO 				:= TRUE;
+stExpectedControlData.b0_1_SLI 				:= TRUE;
+stExpectedControlData.b0_2_SBT 				:= FALSE;
+stExpectedControlData.b0_3_Reserved		    := TRUE;
+stExpectedControlData.b0_4_MutingEncErr	    := TRUE;
+stExpectedControlData.b0_5_TestModeActice	:= TRUE;
+stExpectedControlData.b0_6_AckFDI			:= TRUE;
+stExpectedControlData.b0_7_AckError		    := FALSE;
+stExpectedControlData.b1_0_F_DO0			:= FALSE;
+stExpectedControlData.b1_1_F_DO1			:= TRUE;
+stExpectedControlData.b1_2_Reserved		    := TRUE;
+stExpectedControlData.b1_3_Reserved		    := FALSE;
+stExpectedControlData.b1_4_Reserved		    := TRUE;
+stExpectedControlData.b1_5_Reserved		    := TRUE;
+stExpectedControlData.b1_6_Reserved		    := FALSE;
+stExpectedControlData.b1_7_Reserved		    := TRUE;
+stExpectedControlData.b2_0_SOS1			    := TRUE;
+stExpectedControlData.b2_1_Reserved		    := FALSE;
+stExpectedControlData.b2_2_SSx1			    := FALSE;
+stExpectedControlData.b2_3_SSx2			    := FALSE;
+stExpectedControlData.b2_4_SDI1			    := TRUE;
+stExpectedControlData.b2_5_SDI2			    := TRUE;
+stExpectedControlData.b2_6_SLI1			    := TRUE;
+stExpectedControlData.b2_7_SLI2			    := FALSE;
+stExpectedControlData.b3_0_SLS1			    := TRUE;
+stExpectedControlData.b3_1_SLS2			    := TRUE;
+stExpectedControlData.b3_2_SLS3			    := TRUE;
+stExpectedControlData.b3_3_SLS4			    := TRUE;
+stExpectedControlData.b3_4_SSR1			    := TRUE;
+stExpectedControlData.b3_5_SSR2			    := TRUE;
+stExpectedControlData.b3_6_Reserved		    := TRUE;
+stExpectedControlData.b3_7_Reserved		    := FALSE;
+stExpectedControlData.b4_0_SLA1			    := FALSE;
+stExpectedControlData.b4_1_SLA2			    := TRUE;
+stExpectedControlData.b4_2_Reserved		    := TRUE;
+stExpectedControlData.b4_3_Reserved		    := TRUE;
+stExpectedControlData.b4_4_Reserved		    := TRUE;
+stExpectedControlData.b4_5_Reserved		    := FALSE;
+stExpectedControlData.b4_6_Reserved		    := TRUE;
+stExpectedControlData.b4_7_Reserved		    := FALSE;
+	
+F_Memcpy(ADR(stExpectedControlDataSwap), ADR(stExpectedControlData), SIZEOF(stExpectedControlData), TRUE);
+
+fbDevice.pControl := ADR(stExpectedControlDataSwap);
+
+fbDevice.stConfig.bSwapProcessData := TRUE;
+
+//Act
+fbDevice.GetControlData();
+
+stActualControlData := fbDevice.stControl;
+
+//Assert
+AssertEquals(Expected := stExpectedControlData,
+             Actual := stActualControlData,
+             Message := 'CW1 is not correct');
+
+			 			 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Test_ProcessDataStatus" Id="{366b7906-2edf-0384-16da-08a251f51e01}">
+      <Declaration><![CDATA[METHOD Test_ProcessDataStatus : REFERENCE TO FB_Test
+VAR
+	fbDevice 						: FB_SEW_Movisafe_CSSx1a;
+	
+	stExpectedStatusData 			: ST_SEW_Movisafe_CSSx1a_Status;	
+	stExpectedStatusDataSwap		: ST_SEW_Movisafe_CSSx1a_Status;
+	stActualStatusData 				: ST_SEW_Movisafe_CSSx1a_Status;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('Assign status structure to process data');
+
+//Arrange
+stExpectedStatusData.b0_0_STOActive			:= TRUE;
+stExpectedStatusData.b0_1_ASFDiag		    := TRUE;
+stExpectedStatusData.b0_2_SBTActive		    := TRUE;
+stExpectedStatusData.b0_3_InputDataValid	:= FALSE;
+stExpectedStatusData.b0_4_MutingEncErr	    := FALSE;
+stExpectedStatusData.b0_5_TestModeActive	:= TRUE;
+stExpectedStatusData.b0_6_Warning		    := TRUE;
+stExpectedStatusData.b0_7_ErrorState		:= TRUE;
+stExpectedStatusData.b1_0_F_DI0			    := FALSE;
+stExpectedStatusData.b1_1_F_DI1			    := FALSE;
+stExpectedStatusData.b1_2_F_DI2			    := FALSE;
+stExpectedStatusData.b1_3_F_DI3			    := TRUE;
+stExpectedStatusData.b1_4_Reserved		    := FALSE;
+stExpectedStatusData.b1_5_Reserved		    := FALSE;
+stExpectedStatusData.b1_6_Reserved		    := TRUE;
+stExpectedStatusData.b1_7_Reserved		    := FALSE;
+stExpectedStatusData.b2_0_SOS1			    := TRUE;
+stExpectedStatusData.b2_1_Reserved		    := TRUE;
+stExpectedStatusData.b2_2_SSx1			    := FALSE;
+stExpectedStatusData.b2_3_SSx2			    := TRUE;
+stExpectedStatusData.b2_4_SDI1			    := TRUE;
+stExpectedStatusData.b2_5_SDI2			    := FALSE;
+stExpectedStatusData.b2_6_SLI1			    := FALSE;
+stExpectedStatusData.b2_7_SLI2			    := FALSE;
+stExpectedStatusData.b3_0_SLS1			    := FALSE;
+stExpectedStatusData.b3_1_SLS2			    := TRUE;
+stExpectedStatusData.b3_2_SLS3			    := FALSE;
+stExpectedStatusData.b3_3_SLS4			    := TRUE;
+stExpectedStatusData.b3_4_SSR1			    := TRUE;
+stExpectedStatusData.b3_5_SSR2			    := TRUE;
+stExpectedStatusData.b3_6_Reserved		    := FALSE;
+stExpectedStatusData.b3_7_Reserved		    := FALSE;
+stExpectedStatusData.b4_0_SLA1			    := TRUE;
+stExpectedStatusData.b4_1_SLA2			    := TRUE;
+stExpectedStatusData.b4_2_SSM1			    := FALSE;
+stExpectedStatusData.b4_3_SSM2			    := TRUE;
+stExpectedStatusData.b4_4_SSM3			    := TRUE;
+stExpectedStatusData.b4_5_SSM4			    := TRUE;
+stExpectedStatusData.b4_6_Reserved		    := TRUE;
+stExpectedStatusData.b4_7_Reserved		    := TRUE;
+stExpectedStatusData.b5_0_Reserved		    := FALSE;
+stExpectedStatusData.b5_1_Reserved		    := TRUE;
+stExpectedStatusData.b5_2_Reserved		    := FALSE;
+stExpectedStatusData.b5_3_Reserved		    := FALSE;
+stExpectedStatusData.b5_4_Reserved		    := FALSE;
+stExpectedStatusData.b5_5_Reserved		    := FALSE;
+stExpectedStatusData.b5_6_Reserved		    := TRUE;
+stExpectedStatusData.b5_7_Reserved		    := FALSE;
+
+fbDevice.pStatus := ADR(stExpectedStatusData);
+
+//Act
+fbDevice.SetStatusData();
+
+//Assert
+stActualStatusData := fbDevice.stStatus;
+
+AssertEquals(Expected := stExpectedStatusData,
+             Actual := stActualStatusData,
+             Message := 'Status is not correct');
+	 
+					 			 
+TEST_FINISHED();
+
+
+TEST('Assign status structure to process data SWAP');
+
+//Arrange
+stExpectedStatusData.b0_0_STOActive			:= TRUE;
+stExpectedStatusData.b0_1_ASFDiag		    := TRUE;
+stExpectedStatusData.b0_2_SBTActive		    := TRUE;
+stExpectedStatusData.b0_3_InputDataValid	:= FALSE;
+stExpectedStatusData.b0_4_MutingEncErr	    := FALSE;
+stExpectedStatusData.b0_5_TestModeActive	:= TRUE;
+stExpectedStatusData.b0_6_Warning		    := TRUE;
+stExpectedStatusData.b0_7_ErrorState		:= TRUE;
+stExpectedStatusData.b1_0_F_DI0			    := FALSE;
+stExpectedStatusData.b1_1_F_DI1			    := FALSE;
+stExpectedStatusData.b1_2_F_DI2			    := FALSE;
+stExpectedStatusData.b1_3_F_DI3			    := TRUE;
+stExpectedStatusData.b1_4_Reserved		    := FALSE;
+stExpectedStatusData.b1_5_Reserved		    := FALSE;
+stExpectedStatusData.b1_6_Reserved		    := TRUE;
+stExpectedStatusData.b1_7_Reserved		    := FALSE;
+stExpectedStatusData.b2_0_SOS1			    := TRUE;
+stExpectedStatusData.b2_1_Reserved		    := TRUE;
+stExpectedStatusData.b2_2_SSx1			    := FALSE;
+stExpectedStatusData.b2_3_SSx2			    := TRUE;
+stExpectedStatusData.b2_4_SDI1			    := TRUE;
+stExpectedStatusData.b2_5_SDI2			    := FALSE;
+stExpectedStatusData.b2_6_SLI1			    := FALSE;
+stExpectedStatusData.b2_7_SLI2			    := FALSE;
+stExpectedStatusData.b3_0_SLS1			    := FALSE;
+stExpectedStatusData.b3_1_SLS2			    := TRUE;
+stExpectedStatusData.b3_2_SLS3			    := FALSE;
+stExpectedStatusData.b3_3_SLS4			    := TRUE;
+stExpectedStatusData.b3_4_SSR1			    := TRUE;
+stExpectedStatusData.b3_5_SSR2			    := TRUE;
+stExpectedStatusData.b3_6_Reserved		    := FALSE;
+stExpectedStatusData.b3_7_Reserved		    := FALSE;
+stExpectedStatusData.b4_0_SLA1			    := TRUE;
+stExpectedStatusData.b4_1_SLA2			    := TRUE;
+stExpectedStatusData.b4_2_SSM1			    := FALSE;
+stExpectedStatusData.b4_3_SSM2			    := TRUE;
+stExpectedStatusData.b4_4_SSM3			    := TRUE;
+stExpectedStatusData.b4_5_SSM4			    := TRUE;
+stExpectedStatusData.b4_6_Reserved		    := TRUE;
+stExpectedStatusData.b4_7_Reserved		    := TRUE;
+stExpectedStatusData.b5_0_Reserved		    := FALSE;
+stExpectedStatusData.b5_1_Reserved		    := TRUE;
+stExpectedStatusData.b5_2_Reserved		    := FALSE;
+stExpectedStatusData.b5_3_Reserved		    := FALSE;
+stExpectedStatusData.b5_4_Reserved		    := FALSE;
+stExpectedStatusData.b5_5_Reserved		    := FALSE;
+stExpectedStatusData.b5_6_Reserved		    := TRUE;
+stExpectedStatusData.b5_7_Reserved		    := FALSE;
+
+F_Memcpy(ADR(stExpectedStatusDataSwap), ADR(stExpectedStatusData), SIZEOF(stExpectedStatusData), TRUE);
+
+fbDevice.pStatus := ADR(stExpectedStatusData);
+
+fbDevice.stConfig.bSwapProcessData := TRUE;
+
+//Act
+fbDevice.SetStatusData();
+
+//Assert
+stActualStatusData := fbDevice.stStatus;
+
+AssertEquals(Expected := stExpectedStatusData,
+             Actual := stActualStatusData,
+             Message := 'SW1 is not correct');
+	 				 			 
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a_Test">
+      <LineId Id="20" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a_Test.Test_Cycle">
+      <LineId Id="319" Count="2" />
+      <LineId Id="449" Count="8" />
+      <LineId Id="411" Count="30" />
+      <LineId Id="458" Count="0" />
+      <LineId Id="461" Count="42" />
+      <LineId Id="459" Count="1" />
+      <LineId Id="330" Count="2" />
+      <LineId Id="506" Count="0" />
+      <LineId Id="333" Count="0" />
+      <LineId Id="505" Count="0" />
+      <LineId Id="504" Count="0" />
+      <LineId Id="334" Count="0" />
+      <LineId Id="507" Count="0" />
+      <LineId Id="335" Count="1" />
+      <LineId Id="341" Count="4" />
+      <LineId Id="354" Count="0" />
+      <LineId Id="508" Count="150" />
+      <LineId Id="721" Count="10" />
+      <LineId Id="659" Count="61" />
+      <LineId Id="197" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a_Test.Test_ProcessDataControl">
+      <LineId Id="325" Count="2" />
+      <LineId Id="406" Count="39" />
+      <LineId Id="336" Count="8" />
+      <LineId Id="349" Count="3" />
+      <LineId Id="361" Count="5" />
+      <LineId Id="447" Count="38" />
+      <LineId Id="369" Count="1" />
+      <LineId Id="372" Count="0" />
+      <LineId Id="375" Count="10" />
+      <LineId Id="390" Count="2" />
+      <LineId Id="400" Count="1" />
+      <LineId Id="269" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe_CSSx1a_Test.Test_ProcessDataStatus">
+      <LineId Id="319" Count="2" />
+      <LineId Id="439" Count="4" />
+      <LineId Id="395" Count="42" />
+      <LineId Id="330" Count="6" />
+      <LineId Id="341" Count="0" />
+      <LineId Id="446" Count="0" />
+      <LineId Id="342" Count="3" />
+      <LineId Id="353" Count="6" />
+      <LineId Id="447" Count="46" />
+      <LineId Id="367" Count="0" />
+      <LineId Id="494" Count="0" />
+      <LineId Id="496" Count="0" />
+      <LineId Id="368" Count="8" />
+      <LineId Id="379" Count="0" />
+      <LineId Id="381" Count="4" />
+      <LineId Id="197" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

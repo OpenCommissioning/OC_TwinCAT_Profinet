@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SEW_Movisafe_CSBx1a_Control" Id="{a31978c4-2c4e-0f61-3e2a-c04e05042379}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_SEW_Movisafe_CSBx1a_Control :
+STRUCT
+	b0_0_STO			: BIT; //0.0 Sicher abgeschaltetes Drehmoment
+	b0_1_Reserved		: BIT; //0.1 Reserve
+	b0_2_Reserved		: BIT; //0.2 Reserve
+	b0_3_Reserved		: BIT; //0.3 Reserve
+	b0_4_Reserved		: BIT; //0.4 Reserve
+	b0_5_Reserved		: BIT; //0.5 Reserve
+	b0_6_AckFDI			: BIT; //0.6 Quittierung der verriegelten Digitaleingänge
+	b0_7_AckError		: BIT; //0.7 Quittierung der Fehler Sicherheitskarte
+	b1_0_Reserved		: BIT; //1.0 Reserve
+	b1_1_Reserved		: BIT; //1.1 Reserve
+	b1_2_Reserved		: BIT; //1.2 Reserve
+	b1_3_Reserved		: BIT; //1.3 Reserve
+	b1_4_Reserved		: BIT; //1.4 Reserve
+	b1_5_Reserved		: BIT; //1.5 Reserve
+	b1_6_Reserved		: BIT; //1.6 Reserve
+	b1_7_Reserved		: BIT; //1.7 Reserve
+	b2_0_Reserved		: BIT; //2.0 Reserve
+	b2_1_Reserved		: BIT; //2.1 Reserve
+	b2_2_SSx1			: BIT; //2.2 Antriebssicherheitsfunktion SSx1 deaktivieren
+	b2_3_SSx2			: BIT; //2.3 Antriebssicherheitsfunktion SSx2 deaktivieren
+	b2_4_Reserved		: BIT; //2.4 Reserve
+	b2_5_Reserved		: BIT; //2.5 Reserve
+	b2_6_Reserved		: BIT; //2.6 Reserve
+	b2_7_Reserved		: BIT; //2.7 Reserve
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

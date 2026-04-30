@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_SEW_Movisafe" Id="{cb41f74c-7b55-0a32-3379-548c117bfa18}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SEW_Movisafe IMPLEMENTS I_SEW_Movisafe
+VAR_INPUT
+	bSetSTO : BOOL;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="bSTO" Id="{97e70496-5f1b-0c90-39a4-9af65fa80751}">
+      <Declaration><![CDATA[PROPERTY bSTO : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{b40ef4ad-cfa1-0939-170c-e491bc50d3cc}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bSTO := bSetSTO;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="FB_SEW_Movisafe">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_SEW_Movisafe.bSTO.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

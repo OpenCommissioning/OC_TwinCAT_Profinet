@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SEW_Movisafe_CSSx1a_Status" Id="{92eec067-fe96-0d2d-38f2-96bc2ba2569d}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_SEW_Movisafe_CSSx1a_Status :
+STRUCT
+	b0_0_STOActive		: BIT; //0.0  Sicher abgeschaltetes Drehmoment
+	b0_1_ASFDiag		: BIT; //0.1  Mindestens eine Antriebssicherheitsfunktion hat eine Grenze überschritten
+	b0_2_SBTActive		: BIT; //0.2  Bremsentest ist aktiv
+	b0_3_InputDataValid	: BIT; //0.3  Alle Prozesswerte der F-DI enthalten aktuelle Werte
+	b0_4_MutingEncErr	: BIT; //0.4  Geber Muting Funktion ist aktive
+	b0_5_TestModeActive	: BIT; //0.5  Test Modus der Antriebssicherheitsfunktion ist aktive
+	b0_6_Warning		: BIT; //0.6  Warnung in der Safety-option
+	b0_7_ErrorState		: BIT; //0.7  Fehler in der Safety-option
+	b1_0_F_DI0			: BIT; //1.0  Zustand digitaler Eingang 1
+	b1_1_F_DI1			: BIT; //1.1  Zustand digitaler Eingang 2
+	b1_2_F_DI2			: BIT; //1.2  Zustand digitaler Eingang 3
+	b1_3_F_DI3			: BIT; //1.3  Zustand digitaler Eingang 4
+	b1_4_Reserved		: BIT; //1.4  Reserve
+	b1_5_Reserved		: BIT; //1.5  Reserve
+	b1_6_Reserved		: BIT; //1.6  Reserve
+	b1_7_Reserved		: BIT; //1.7  Reserve
+	b2_0_SOS1			: BIT; //2.0  SOS1 ist aktiviert (Sicherer Betriebshalt)
+	b2_1_Reserved		: BIT; //2.1  Reserve
+	b2_2_SSx1			: BIT; //2.2  SSx1  ist aktiviert
+	b2_3_SSx2			: BIT; //2.3  SSx2 ist aktiviert
+	b2_4_SDI1			: BIT; //2.4  SDI 1  ist aktiviert (Sichere Bewegungsrichtung)
+	b2_5_SDI2			: BIT; //2.5  SDI 2  ist aktiviert (Sichere Bewegungsrichtung)
+	b2_6_SLI1			: BIT; //2.6  SLI 1  ist aktiviert (Sicher begrenztes Schrittmaß)
+	b2_7_SLI2			: BIT; //2.7  SLI 2  ist aktiviert (Sicher begrenztes Schrittmaß)
+	b3_0_SLS1			: BIT; //3.0  SLS 1  ist aktiviert (Sicher begrenzte Geschwindigkeit)
+	b3_1_SLS2			: BIT; //3.1  SLS 2  ist aktiviert (Sicher begrenzte Geschwindigkeit)
+	b3_2_SLS3			: BIT; //3.2  SLS 3  ist aktiviert (Sicher begrenzte Geschwindigkeit)
+	b3_3_SLS4			: BIT; //3.3  SLS 4  ist aktiviert (Sicher begrenzte Geschwindigkeit)
+	b3_4_SSR1			: BIT; //3.4  SSR 1  ist aktiviert (Sicherer Geschwindigkeitsbereich)
+	b3_5_SSR2			: BIT; //3.5  SSR 2  ist aktiviert (Sicherer Geschwindigkeitsbereich)
+	b3_6_Reserved		: BIT; //3.6  Reserve
+	b3_7_Reserved		: BIT; //3.7  Reserve
+	b4_0_SLA1			: BIT; //4.0  SLA 1  ist aktiviert (Sicher begrenzte Beschleunigung)
+	b4_1_SLA2			: BIT; //4.1  SLA 2  ist aktiviert (Sicher begrenzte Beschleunigung)
+	b4_2_SSM1			: BIT; //4.2  SSM 1  ist aktiviert (Sichere Geschwindigkeitsüberwachung)
+	b4_3_SSM2			: BIT; //4.3  SSM 2  ist aktiviert (Sichere Geschwindigkeitsüberwachung)
+	b4_4_SSM3			: BIT; //4.4  SSM 3  ist aktiviert (Sichere Geschwindigkeitsüberwachung)
+	b4_5_SSM4			: BIT; //4.5  SSM 4  ist aktiviert (Sichere Geschwindigkeitsüberwachung)
+	b4_6_Reserved		: BIT; //4.6  Reserve
+	b4_7_Reserved		: BIT; //4.7  Reserve
+	b5_0_Reserved		: BIT; //5.0  Reserve
+	b5_1_Reserved		: BIT; //5.1  Reserve
+	b5_2_Reserved		: BIT; //5.2  Reserve
+	b5_3_Reserved		: BIT; //5.3  Reserve
+	b5_4_Reserved		: BIT; //5.4  Reserve
+	b5_5_Reserved		: BIT; //5.5  Reserve
+	b5_6_Reserved		: BIT; //5.6  Reserve
+	b5_7_Reserved		: BIT; //5.7  Reserve
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

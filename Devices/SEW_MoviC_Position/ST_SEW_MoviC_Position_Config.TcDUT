@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SEW_MoviC_Position_Config" Id="{dce56971-73a4-0dea-1b8a-3cf734f38b2d}">
+    <Declaration><![CDATA[TYPE ST_SEW_MoviC_Position_Config :
+STRUCT
+	bForceMode				: BOOL; //Ignore process data from fieldbus.
+	bSwapProcessData		: BOOL; //Reverse process data byte order from/to fieldbus.
+	nSoftwareLimitMin		: DINT := -2147483648;	//Position limit minimum in LU
+	nSoftwareLimitMax		: DINT := 2147483647;	//Position limit maximum in LU
+	nReferencePos			: DINT := 0;			//Reference position in LU when using mode 300
+	fDecCoastStop			: REAL := 1000.0;		//Deceleration for coast/brake stop in LU/s^2
+	fDecEstop				: REAL := 100.0;		//Deceleration for emergency stop in LU/s^2
+	fDecelerationLimit		: REAL := 100.0;		//Decceleration limit (bus stop) in LU/s^2
+	fRatioVelocity			: REAL := 1.0;			//Ratio for setpoint velocity
+	fRatioAccDec			: REAL := 1.0;			//Ratio for setpoint acceleration/deceleration
+	fRatioPosition			: REAL := 1.0;			//Ratio for position output
+	nJerk					: INT  := 0;			//Jerk from 0 to 100%
+	fPositionOffset			: REAL := 0;
+	fInitPosition			: REAL := 0;
+	fResolution				: REAL := 0.1;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

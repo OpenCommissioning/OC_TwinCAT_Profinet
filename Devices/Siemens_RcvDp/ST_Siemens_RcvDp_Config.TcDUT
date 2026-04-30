@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Siemens_RcvDp_Config" Id="{203a9270-f51a-01e7-3db8-4b7478bc05b2}">
+    <Declaration><![CDATA[TYPE ST_Siemens_RcvDp_Config :
+STRUCT
+	bForceMode			: BOOL; //Ignore process data from fieldbus.
+	bSwapProcessData	: BOOL; //Reverse process data byte order from/to fieldbus.
+	nDpDpId			 	: UINT := 0;
+	fTimeout		 	: REAL := 0.5;
+	bAutoAckRei			: BOOL := TRUE;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

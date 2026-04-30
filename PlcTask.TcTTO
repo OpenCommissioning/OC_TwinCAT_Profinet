@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
-  <Task Name="PlcTask" Id="{9e695a1b-cfde-060e-2d5c-cfc07462728c}">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
+  <Task Name="PlcTask" Id="{44374800-b438-0b30-32e0-f64954a90b7d}">
     <!--CycleTime in micro seconds.-->
     <CycleTime>1000</CycleTime>
-    <Priority>1</Priority>
+    <Priority>6</Priority>
     <PouCall>
       <Name>PRG_TEST</Name>
     </PouCall>
-    <TaskFBGuid>{50ab16c5-1d96-486c-ba30-ff02c680b095}</TaskFBGuid>
-    <Fb_init>{366d3b77-f9ae-4306-a2a7-bf2c7234b8ad}</Fb_init>
-    <Fb_exit>{c2142275-db5f-48f2-91da-1ab2d115c716}</Fb_exit>
-    <CycleUpdate>{855348b5-41a3-416a-b096-fe786906c1f2}</CycleUpdate>
-    <PostCycleUpdate>{35ee08fd-50e9-449f-9d83-1797a641864b}</PostCycleUpdate>
+    <TaskFBGuid>{0d97375e-f871-40cc-8c95-d11e33600537}</TaskFBGuid>
+    <Fb_init>{cf3bcfbc-7cd8-4860-ae9b-5871298f2bc3}</Fb_init>
+    <Fb_exit>{a2da4880-2e0c-463f-8e0c-68ce60c578f5}</Fb_exit>
+    <CycleUpdate>{b148891a-8433-4ee4-a62c-d0ece0c55455}</CycleUpdate>
+    <PostCycleUpdate>{0e16551f-8f30-446a-a810-10dafea63217}</PostCycleUpdate>
   </Task>
 </TcPlcObject>

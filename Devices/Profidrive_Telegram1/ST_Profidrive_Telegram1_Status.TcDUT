@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Profidrive_Telegram1_Status" Id="{ea39b603-e4e9-0554-167e-dbd5e930e284}">
+    <Declaration><![CDATA[TYPE ST_Profidrive_Telegram1_Status :
+STRUCT
+	b0_ReadyForSwitchingOn				: BOOL; // ZSW1_0	1 = Ready for switching on
+	b1_ReadyForOperation				: BOOL; // ZSW1_1	1 = Ready for operation
+	b2_OperationEnabled					: BOOL; // ZSW1_2	1 = Operation enabled
+	b3_FaultPresent						: BOOL; // ZSW1_3	1 = Fault present
+	b4_NoCoastDownActive				: BOOL; // ZSW1_4	1 = No coast down active (OFF2 inactive)
+	b5_NoQuickStopActive				: BOOL; // ZSW1_5	1 = No quick stop active (OFF3 inactive)
+	b6_SwitchingOnInhibited				: BOOL; // ZSW1_6	1 = Switching on inhibited active
+	b7_AlarmPresent						: BOOL; // ZSW1_7	1 = Alarm present                        	
+	b8_DeviationWithinTolerance			: BOOL; // ZSW1_8	1 = Speed setpoint - actual value deviation within tolerance t_off
+	b9_ControlRequested					: BOOL; // ZSW1_9	1 = Control requested        
+	b10_RpmCompValueReachedOrExceeded	: BOOL; // ZSW1_10	1 = f or n comparison value reached/exceeded  
+	b11_TorqueOrPowerLimitNotReached	: BOOL; // ZSW1_11	1 = I, M, or P limit not reached     
+	b12_OpenHoldingBrake 				: BOOL; // ZSW1_12	1 = Open the holding brake      
+	b13_NoOvertempAlarm					: BOOL; // ZSW1_13	1 = No motor overtemperature alarm      
+	b14_MotorRotatesForwards			: BOOL; // ZSW1_14	1 = Motor rotates forwards (n_act >= 0) | 0 = Motor rotates backwards (n_act < 0)   
+	b15_NoAlarmNoOvertempPowerUnit		: BOOL; // ZSW1_15	1 = No alarm, thermal overload, power unit  
+	nVelocity							: INT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

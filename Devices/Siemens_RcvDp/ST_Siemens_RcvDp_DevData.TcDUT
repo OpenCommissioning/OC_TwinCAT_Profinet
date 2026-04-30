@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Siemens_RcvDp_DevData" Id="{11eee295-ee79-03ad-3aae-4c916fef7a70}">
+    <Declaration><![CDATA[TYPE ST_Siemens_RcvDp_DevData :
+STRUCT
+	bAckRei		: BOOL;
+	bSub00		: BOOL;
+	bSub01		: BOOL;
+	bSub02		: BOOL;
+	bSub03		: BOOL;
+	bSub04		: BOOL;
+	bSub05		: BOOL;
+	bSub06		: BOOL;
+	bSub07		: BOOL;
+	bSub08		: BOOL;
+	bSub09		: BOOL;
+	bSub10		: BOOL;
+	bSub11		: BOOL;
+	bSub12		: BOOL;
+	bSub13		: BOOL;
+	bSub14		: BOOL;
+	bSub15		: BOOL;
+	nSub00		: INT;
+	nSub01		: INT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

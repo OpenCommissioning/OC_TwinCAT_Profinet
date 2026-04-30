@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SEW_Movisafe_CSBx1a_Status" Id="{f1742eb9-6ea2-0715-3ddc-1b7cbe55dd64}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_SEW_Movisafe_CSBx1a_Status :
+STRUCT
+	b0_0_StoActive		: BIT; //0.0 Sicher abgeschaltetes Drehmoment
+	b0_1_Reserved		: BIT; //0.1 Reserve
+	b0_2_Reserved		: BIT; //0.2 Reserve
+	b0_3_InputDataValid	: BIT; //0.3 Alle Prozesswerte der F-DI enthalten aktuelle Werte
+	b0_4_Reserved		: BIT; //0.4 Reserve
+	b0_5_Reserved		: BIT; //0.5 Reserve
+	b0_6_Warning		: BIT; //0.6 Warnung in der Safety-option
+	b0_7_ErrorState		: BIT; //0.7 Fehler in der Safety-option
+	b1_0_F_DI0			: BIT; //1.0 Zustand digitaler Eingang 1
+	b1_1_F_DI1			: BIT; //1.1 Zustand digitaler Eingang 2
+	b1_2_F_DI2			: BIT; //1.2 Zustand digitaler Eingang 3
+	b1_3_F_DI3			: BIT; //1.3 Zustand digitaler Eingang 4
+	b1_4_Reserved		: BIT; //1.4 Reserve
+	b1_5_Reserved		: BIT; //1.5 Reserve
+	b1_6_Reserved		: BIT; //1.6 Reserve
+	b1_7_Reserved		: BIT; //1.7 Reserve
+	b2_0_Reserved		: BIT; //2.0 Reserve
+	b2_1_Reserved		: BIT; //2.1 Reserve
+	b2_2_SSx1			: BIT; //2.2 SSx1  ist aktiviert
+	b2_3_SSx2			: BIT; //2.3 SSx2 ist aktiviert
+	b2_4_Reserved		: BIT; //2.4 Reserve
+	b2_5_Reserved		: BIT; //2.5 Reserve
+	b2_6_Reserved		: BIT; //2.6 Reserve
+	b2_7_Reserved		: BIT; //2.7 Reserve
+	b3_0_Reserved		: BIT; //3.0 Reserve
+	b3_1_Reserved		: BIT; //3.1 Reserve
+	b3_2_Reserved		: BIT; //3.2 Reserve
+	b3_3_Reserved		: BIT; //3.3 Reserve
+	b3_4_Reserved		: BIT; //3.4 Reserve
+	b3_5_Reserved		: BIT; //3.5 Reserve
+	b3_6_Reserved		: BIT; //3.6 Reserve
+	b3_7_Reserved		: BIT; //3.7 Reserve
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

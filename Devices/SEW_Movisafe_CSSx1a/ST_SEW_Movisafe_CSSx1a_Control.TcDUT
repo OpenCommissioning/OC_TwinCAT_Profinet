@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SEW_Movisafe_CSSx1a_Control" Id="{cd44c9db-15a5-096e-2976-c150b692f4b7}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'}
+TYPE ST_SEW_Movisafe_CSSx1a_Control :
+STRUCT
+	b0_0_STO			: BIT; //0.0  Sicher abgeschaltetes Drehmoment
+	b0_1_SLI			: BIT; //0.1  Freigabe SLI (Sicher begrenztes Schrittmaß)
+	b0_2_SBT			: BIT; //0.2  Freigabe SBT (Sicherer Bremsentest)
+	b0_3_Reserved		: BIT; //0.3  Reserve
+	b0_4_MutingEncErr	: BIT; //0.4  Muting Geber anwählen
+	b0_5_TestModeActice	: BIT; //0.5  Test Modus der Antriebssicherheitsfunktion anwählen
+	b0_6_AckFDI			: BIT; //0.6  Quittierung der verriegelten Digitaleingänge
+	b0_7_AckError		: BIT; //0.7  Quittierung der Fehler Sicherheitskarte
+	b1_0_F_DO0			: BIT; //1.0  F-DO 00 Digitaler Ausgang 0
+	b1_1_F_DO1			: BIT; //1.1  F-DO 01 Digitaler Ausgang 1
+	b1_2_Reserved		: BIT; //1.2  Reserve
+	b1_3_Reserved		: BIT; //1.3  Reserve
+	b1_4_Reserved		: BIT; //1.4  Reserve
+	b1_5_Reserved		: BIT; //1.5  Reserve
+	b1_6_Reserved		: BIT; //1.6  Reserve
+	b1_7_Reserved		: BIT; //1.7  Reserve
+	b2_0_SOS1			: BIT; //2.0  SOS1 deaktivieren (Sicherer Betriebshalt)
+	b2_1_Reserved		: BIT; //2.1  Reserve
+	b2_2_SSx1			: BIT; //2.2  Antriebssicherheitsfunktion SSx1 deaktivieren
+	b2_3_SSx2			: BIT; //2.3  Antriebssicherheitsfunktion SSx2 deaktivieren
+	b2_4_SDI1			: BIT; //2.4  SDI 1 deaktivieren (Sichere Bewegungsrichtung)
+	b2_5_SDI2			: BIT; //2.5  SDI 2 deaktivieren (Sichere Bewegungsrichtung)
+	b2_6_SLI1			: BIT; //2.6  SLI 1 deaktivieren (Sicher begrenztes Schrittmaß)
+	b2_7_SLI2			: BIT; //2.7  SLI 2 deaktivieren (Sicher begrenztes Schrittmaß)
+	b3_0_SLS1			: BIT; //3.0  SLS 1 deaktivieren (Sicher begrenzte Geschwindigkeit)
+	b3_1_SLS2			: BIT; //3.1  SLS 2 deaktivieren (Sicher begrenzte Geschwindigkeit)
+	b3_2_SLS3			: BIT; //3.2  SLS 3 deaktivieren (Sicher begrenzte Geschwindigkeit)
+	b3_3_SLS4			: BIT; //3.3  SLS 4 deaktivieren (Sicher begrenzte Geschwindigkeit)
+	b3_4_SSR1			: BIT; //3.4  SSR 1 deaktivieren (Sicherer Geschwindigkeitsbereich)
+	b3_5_SSR2			: BIT; //3.5  SSR 2 deaktivieren (Sicherer Geschwindigkeitsbereich)
+	b3_6_Reserved		: BIT; //3.6  Reserve
+	b3_7_Reserved		: BIT; //3.7  Reserve
+	b4_0_SLA1			: BIT; //4.0  SLA 1 deaktivieren (Sicher begrenzte Beschleunigung)
+	b4_1_SLA2			: BIT; //4.1  SLA 2 deaktivieren (Sicher begrenzte Beschleunigung)
+	b4_2_Reserved		: BIT; //4.2  Reserve
+	b4_3_Reserved		: BIT; //4.3  Reserve
+	b4_4_Reserved		: BIT; //4.4  Reserve
+	b4_5_Reserved		: BIT; //4.5  Reserve
+	b4_6_Reserved		: BIT; //4.6  Reserve
+	b4_7_Reserved		: BIT; //4.7  Reserve
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

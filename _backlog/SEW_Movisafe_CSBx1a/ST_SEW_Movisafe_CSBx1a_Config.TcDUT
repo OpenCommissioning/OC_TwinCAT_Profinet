@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_SEW_Movisafe_CSBx1a_Config" Id="{8cc60221-2c88-09ff-0273-e729fcb5aebd}">
+    <Declaration><![CDATA[TYPE ST_SEW_Movisafe_CSBx1a_Config :
+STRUCT	
+	bForceMode			: BOOL; //Ignore process data from fieldbus.
+	bSwapProcessData	: BOOL; //Reverse process data byte order from/to fieldbus.
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -9,7 +9,7 @@
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>OC_Profinet</Name>
-    <ProgramVersion>3.1.4024.0</ProgramVersion>
+    <ProgramVersion>3.1.4026.19</ProgramVersion>
     <Application>{4ca78d21-bfb9-4084-b90f-308ac1e30a50}</Application>
     <TypeSystem>{76cac991-1778-4ca7-ac51-6a60a58a0ac7}</TypeSystem>
     <Implicit_Task_Info>{3efc201f-f732-490c-8a01-d73cb4423bcb}</Implicit_Task_Info>
@@ -29,7 +29,7 @@
     <Released>false</Released>
     <Company>Open Commissioning</Company>
     <Title>OC_Profinet</Title>
-    <ProjectVersion>1.0.1</ProjectVersion>
+    <ProjectVersion>1.0.2</ProjectVersion>
     <DefaultNamespace>OC_Profinet</DefaultNamespace>
     <Placeholder>OC_Profinet</Placeholder>
     <Author>SpiraTec AG</Author>

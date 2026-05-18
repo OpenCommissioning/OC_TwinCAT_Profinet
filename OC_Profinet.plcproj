@@ -29,7 +29,7 @@
     <Released>false</Released>
     <Company>Open Commissioning</Company>
     <Title>OC_Profinet</Title>
-    <ProjectVersion>1.0.0</ProjectVersion>
+    <ProjectVersion>1.0.1</ProjectVersion>
     <DefaultNamespace>OC_Profinet</DefaultNamespace>
     <Placeholder>OC_Profinet</Placeholder>
     <Author>SpiraTec AG</Author>

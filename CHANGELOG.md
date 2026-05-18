@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/OpenCommissioning/OC_TwinCAT_Profinet/compare/v1.0.0...v1.0.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* GSM to public ([0590a1c](https://github.com/OpenCommissioning/OC_TwinCAT_Profinet/commit/0590a1c44708cf67b3cce6abc22673a86a4aec1d))
+
 # 1.0.0 (2026-04-30)
 
 

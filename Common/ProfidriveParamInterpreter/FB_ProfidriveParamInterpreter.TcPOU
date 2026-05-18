@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.13">
   <POU Name="FB_ProfidriveParamInterpreter" Id="{71925c59-867f-0b10-2bb6-c7c78e284de7}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK INTERNAL FB_ProfidriveParamInterpreter
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_ProfidriveParamInterpreter
 VAR_INPUT
 	(* Pointer to raw user data *)
 	pRawData		: POINTER TO BYTE;
@@ -213,25 +213,5 @@ nParameters := 0;
 memset(pParamSet, 0, SIZEOF(ST_ProfidriveParam_Set));]]></ST>
       </Implementation>
     </Method>
-    <LineIds Name="FB_ProfidriveParamInterpreter">
-      <LineId Id="111" Count="59" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_ProfidriveParamInterpreter.FormatSize">
-      <LineId Id="3" Count="14" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_ProfidriveParamInterpreter.FormatType">
-      <LineId Id="3" Count="14" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_ProfidriveParamInterpreter.MakeResponse">
-      <LineId Id="3" Count="48" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_ProfidriveParamInterpreter.Reset">
-      <LineId Id="3" Count="3" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
   </POU>
 </TcPlcObject>

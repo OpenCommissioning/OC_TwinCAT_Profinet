@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
   <POU Name="FB_Profidrive_Telegram1" Id="{b5f9a89c-3efe-0e6b-253d-9ba6d895b770}" SpecialFunc="None">
     <Declaration><![CDATA[{attribute 'reflection'} 
 FUNCTION_BLOCK FB_Profidrive_Telegram1 EXTENDS FB_LinkDataReal
@@ -54,6 +54,8 @@ _fbProfidriveGSM.nControl.b0_On 				:= stControl.b0_OFF1;
 _fbProfidriveGSM.nControl.b1_CoastStop 			:= stControl.b1_OFF2;
 _fbProfidriveGSM.nControl.b2_QuickStop 			:= stControl.b2_OFF3 AND NOT _bQuickStopExternal;
 _fbProfidriveGSM.nControl.b3_EnableOperation	:= stControl.b3_EnableOperation;
+
+_fbProfidriveGSM();
 
 (* Preset target values *)
 _fbMoveVelocity.fTargetVelocity					:= 0;
@@ -128,7 +130,8 @@ fValue := ControlData;
         <ST><![CDATA[IF pControl <= 0 OR stConfig.bForceMode THEN RETURN; END_IF
 
 F_Memcpy(ADR(stControl), pControl, 2, stConfig.bSwapProcessData);
-F_Memcpy(ADR(stControl) + 2, pControl + 2, 2, stConfig.bSwapProcessData);]]></ST>
+F_Memcpy(ADR(stControl) + 2, pControl + 2, 2, stConfig.bSwapProcessData);
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="InitRun" Id="{15c4b193-c5a7-0362-12c7-5ef3e89884bc}">
@@ -152,6 +155,12 @@ END_IF]]></ST>
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF _fbProfidriveGSM.eState = E_ProfidriveGSM_State.S4_Operation THEN	
+	
+	_fAcceleration := (stConfig.fP2000 / stConfig.fP1120);
+	_fDeceleration := (stConfig.fP2000 / stConfig.fP1121);
+	_fDecelerationQuickStop := _fDeceleration * stConfig.fP1135;
+	_fDecelerationCoastStop := _fDeceleration * stConfig.fRampDownTimeCoastStop;
+
 	// Main setpoint
 	IF NOT stControl.b8_Jog1 AND NOT stControl.b9_Jog2 THEN
 		_fbMoveVelocity.fTargetVelocity := (stControl.nTargetVelocity * stConfig.fP2000) / 16#4000;
@@ -183,38 +192,9 @@ END_IF]]></ST>
         <ST><![CDATA[IF pStatus <= 0 THEN RETURN; END_IF
 
 F_Memcpy(pStatus, ADR(stStatus), 2, stConfig.bSwapProcessData);
-F_Memcpy(pStatus + 2, ADR(stStatus) + 2, 2, stConfig.bSwapProcessData);]]></ST>
+F_Memcpy(pStatus + 2, ADR(stStatus) + 2, 2, stConfig.bSwapProcessData);
+]]></ST>
       </Implementation>
     </Method>
-    <LineIds Name="FB_Profidrive_Telegram1">
-      <LineId Id="48" Count="6" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_Profidrive_Telegram1.Cycle">
-      <LineId Id="3" Count="5" />
-      <LineId Id="81" Count="1" />
-      <LineId Id="86" Count="0" />
-      <LineId Id="84" Count="0" />
-      <LineId Id="13" Count="55" />
-      <LineId Id="80" Count="0" />
-      <LineId Id="70" Count="8" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_Profidrive_Telegram1.GetControlData">
-      <LineId Id="3" Count="2" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_Profidrive_Telegram1.InitRun">
-      <LineId Id="3" Count="4" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_Profidrive_Telegram1.Operation">
-      <LineId Id="3" Count="22" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="FB_Profidrive_Telegram1.SetStatusData">
-      <LineId Id="3" Count="2" />
-      <LineId Id="2" Count="0" />
-    </LineIds>
   </POU>
 </TcPlcObject>
